@@ -1,0 +1,8 @@
+/backend-apc/build/
+/backend-apc/bin/
+/backend-apc/.gradle/
+/backend-apc/.settings/
+/backend-apc/.env
+/backend-apc/.idea/
+/frontend-apc/.idea/
+
