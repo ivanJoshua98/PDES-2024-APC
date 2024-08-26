@@ -1,4 +1,5 @@
 package ar.edu.unq.apc.model;
+
 import java.util.List;
 
 public class BuyerUser extends User {
@@ -25,10 +26,7 @@ public class BuyerUser extends User {
         return purchasesMade;
     }
 
-    //agregar compra realizada
     public void addBuy(Buy purchaseMade){
         purchasesMade.add(purchaseMade);
     }
-
-
 }
