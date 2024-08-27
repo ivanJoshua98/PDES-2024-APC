@@ -7,7 +7,18 @@ public class ManagementUser extends User {
     public ManagementUser(String id, String name, String email, String password) {
         super(id, name, email, password);
     }
+    //consultar a la base de datos
+    public void consultUser(User user){
 
+    }
+
+    public void consultProduct(Product pro){
+
+    }
+
+    public void consultBuy(Buy buy){
+        
+    }
     public void consultUsers(List<User> users) {
 
     }
