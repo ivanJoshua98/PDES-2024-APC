@@ -9,25 +9,21 @@ git clone https://github.com/ivanJoshua98/PDES-2024-APC.git
 
 ## Backend 
 ```
-cd backend
+cd backend-apc
 ```
 
+### Inicializar base de datos
+
+El siguiente comando levantará la base de datos postgres que utilizara la aplicación 
+
+```
+docker-compose up
+```
 ### Run Backend
 ```
+./gradlew run
 ```
 ### Tests Backend
 ```
-```
-
-## Frontend
-```
-cd frontend
-```
-
-### Run Frontend
-```
-```
-
-### Tests Frontend
-```
+./gradlew test
 ```
