@@ -109,5 +109,5 @@ public class Product {
         this.condition = condition;
     }
 
-    
+
 }

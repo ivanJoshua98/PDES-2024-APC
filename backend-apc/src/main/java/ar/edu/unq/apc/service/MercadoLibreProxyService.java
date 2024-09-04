@@ -84,7 +84,7 @@ public class MercadoLibreProxyService {
     public String executeGetRequest(String url){
         HttpEntity<Void> request;
         HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + "APP_USR-7663246217238920-090220-60fc78a54137a158a4dbcab38ce79cea-1136666046");
+		headers.set("Authorization", "Bearer " + "APP_USR-7663246217238920-090409-8b0591dd15b0a2a987480888809e3ca7-1136666046");
 		request = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);

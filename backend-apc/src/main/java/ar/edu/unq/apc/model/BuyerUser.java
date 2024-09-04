@@ -1,24 +1,42 @@
 package ar.edu.unq.apc.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import java.util.List;
+import java.util.ArrayList;
 
+@Entity
 public class BuyerUser extends User {
-    private List<Product> favoriteProducts;
-    private List<Buy> purchasesMade;
+
+    @ManyToMany
+    @JoinTable(
+            name = "buyer_favorite_products",
+            joinColumns = @JoinColumn(name = "buyer_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id")
+    )
+    private List<Product> favoriteProducts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Buy> purchasesMade = new ArrayList<>();
 
     public BuyerUser(String id, String name, String email, String password) {
         super(id, name, email, password);
     }
 
+
     public List<Product> getFavoriteProducts() {
         return favoriteProducts;
     }
 
-    public void addFavoriteProducts(Product product){
+    public void addFavoriteProduct(Product product){
         favoriteProducts.add(product);
     }
 
-    public void deleteFavoriteProducts(Product product){
+    public void deleteFavoriteProduct(Product product){
         favoriteProducts.remove(product);
     }
 
@@ -29,4 +47,9 @@ public class BuyerUser extends User {
     public void addBuy(Buy purchaseMade){
         purchasesMade.add(purchaseMade);
     }
+
+    public void removeBuy(Buy purchaseMade){
+        purchasesMade.remove(purchaseMade);
+    }
 }
+

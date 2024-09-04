@@ -1,4 +1,4 @@
-package ar.edu.unq.apc.service;
+package ar.edu.unq.apc.service.impl;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ar.edu.unq.apc.model.HttpException;
 import ar.edu.unq.apc.model.Product;
 import ar.edu.unq.apc.persistence.ProductRepository;
+import ar.edu.unq.apc.service.ProductService;
 
 @Service
 public class ProductServiceImpl implements ProductService{
