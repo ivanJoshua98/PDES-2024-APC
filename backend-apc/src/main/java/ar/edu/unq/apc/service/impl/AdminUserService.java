@@ -1,7 +1,6 @@
 package ar.edu.unq.apc.service.impl;
 
 import ar.edu.unq.apc.model.Buy;
-import ar.edu.unq.apc.model.BuyerUser;
 import ar.edu.unq.apc.model.Product;
 import ar.edu.unq.apc.model.User;
 import ar.edu.unq.apc.persistence.AdminUserRepository;
@@ -10,7 +9,6 @@ import ar.edu.unq.apc.persistence.BuyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,7 +27,7 @@ public class AdminUserService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    public Product consultProduct(Long productId){
+    public Product consultProduct(String productId){
         return productRepository.findById(productId).orElse(null);
     }
 
@@ -41,7 +39,7 @@ public class AdminUserService {
         return userRepository.findAll();
     }
 
-    public List<Product> viewSavedProducts(List<Long> productIds) {
+    public List<Product> viewSavedProducts(List<String> productIds) {
         return productRepository.findAllById(productIds);
     }
 
