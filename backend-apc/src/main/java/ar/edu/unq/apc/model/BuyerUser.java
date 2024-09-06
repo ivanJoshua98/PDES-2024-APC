@@ -48,8 +48,5 @@ public class BuyerUser extends User {
         purchasesMade.add(purchaseMade);
     }
 
-    public void removeBuy(Buy purchaseMade){
-        purchasesMade.remove(purchaseMade);
-    }
 }
 
