@@ -58,7 +58,7 @@ public class BuyerUserService {
     }
 
     public void deleteFavoriteProduct(String buyerUserId, String productId) {
-        BuyerUser buyerUser = (BuyerUser) userRepository.findById(buyerUserId)
+        BuyerUser buyerUser = userRepository.findById(buyerUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Product product = productRepository.findById(productId)
@@ -69,8 +69,8 @@ public class BuyerUserService {
     }
 
     public void addPurchase(String buyerUserId, Buy buy) {
-        BuyerUser buyerUser = (BuyerUser) userRepository.findById(buyerUserId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        BuyerUser buyerUser = userRepository.findById(buyerUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         buyerUser.addBuy(buy);
         buyRepository.save(buy);
