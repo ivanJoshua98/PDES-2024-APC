@@ -28,21 +28,21 @@ public class BuyerUserController {
     }
 
     @PostMapping("/{buyerUserId}/favorite-product/{productId}")
-    public ResponseEntity<Void> addFavoriteProduct(@PathVariable String buyerUserId,
+    public ResponseEntity<Void> addFavoriteProduct(@PathVariable Long buyerUserId,
                                                    @PathVariable String productId) {
         userService.addFavoriteProduct(buyerUserId, productId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{buyerUserId}/favorite-product/{productId}")
-    public ResponseEntity<Void> deleteFavoriteProduct(@PathVariable String buyerUserId,
+    public ResponseEntity<Void> deleteFavoriteProduct(@PathVariable Long buyerUserId,
                                                       @PathVariable String productId) {
         userService.deleteFavoriteProduct(buyerUserId, productId);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{buyerUserId}/purchase")
-    public ResponseEntity<Void> addPurchase(@PathVariable String buyerUserId,
+    public ResponseEntity<Void> addPurchase(@PathVariable Long buyerUserId,
                                             @RequestBody Buy buy) {
         userService.addPurchase(buyerUserId, buy);
         return ResponseEntity.ok().build();

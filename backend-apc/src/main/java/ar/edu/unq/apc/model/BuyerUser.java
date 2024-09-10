@@ -23,8 +23,8 @@ public class BuyerUser extends User {
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Buy> purchasesMade = new ArrayList<>();
 
-    public BuyerUser(String id, String name, String email, String password) {
-        super(id, name, email, password);
+    public BuyerUser(String name, String email, String password) {
+        super(name, email, password);
     }
 
 

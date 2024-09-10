@@ -30,7 +30,7 @@ public class BuyerUserService {
         }
 
         String encodedPassword = passwordEncoder.encode(password);
-        BuyerUser user = new BuyerUser(null, name, email, encodedPassword);
+        BuyerUser user = new BuyerUser(name, email, encodedPassword);
 
         return userRepository.save(user);
     }
@@ -46,7 +46,7 @@ public class BuyerUserService {
         return user;
     }
 
-    public void addFavoriteProduct(String buyerUserId, String productId) {
+    public void addFavoriteProduct(Long buyerUserId, String productId) {
         BuyerUser buyerUser = (BuyerUser) userRepository.findById(buyerUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -57,7 +57,7 @@ public class BuyerUserService {
         userRepository.save(buyerUser);
     }
 
-    public void deleteFavoriteProduct(String buyerUserId, String productId) {
+    public void deleteFavoriteProduct(Long buyerUserId, String productId) {
         BuyerUser buyerUser = userRepository.findById(buyerUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -68,7 +68,7 @@ public class BuyerUserService {
         userRepository.save(buyerUser);
     }
 
-    public void addPurchase(String buyerUserId, Buy buy) {
+    public void addPurchase(Long buyerUserId, Buy buy) {
         BuyerUser buyerUser = userRepository.findById(buyerUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

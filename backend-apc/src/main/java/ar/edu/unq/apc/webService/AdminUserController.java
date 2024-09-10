@@ -19,7 +19,7 @@ public class AdminUserController {
     private AdminUserService adminUserService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable String userId) {
+    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
         User user = adminUserService.consultUser(userId);
         return (user != null) ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
@@ -49,13 +49,13 @@ public class AdminUserController {
     }
 
     @GetMapping("/{userId}/buys")
-    public ResponseEntity<List<Buy>> getBuysByUser(@PathVariable String userId) {
+    public ResponseEntity<List<Buy>> getBuysByUser(@PathVariable Long userId) {
         List<Buy> buys = adminUserService.consultBuysByUser(userId);
         return ResponseEntity.ok(buys);
     }
 
     @GetMapping("/{userId}/favorites")
-    public ResponseEntity<List<Product>> getFavoriteProductsByUser(@PathVariable String userId) {
+    public ResponseEntity<List<Product>> getFavoriteProductsByUser(@PathVariable Long userId) {
         List<Product> favoriteProducts = adminUserService.consultFavoriteProductsByUser(userId);
         return ResponseEntity.ok(favoriteProducts);
     }

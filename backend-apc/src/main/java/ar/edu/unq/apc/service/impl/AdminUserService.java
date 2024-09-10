@@ -25,7 +25,7 @@ public class AdminUserService {
     @Autowired
     private BuyRepository buyRepository;
 
-    public User consultUser(String userId){
+    public User consultUser(Long userId){
         return userRepository.findById(userId).orElse(null);
     }
 
@@ -45,11 +45,11 @@ public class AdminUserService {
         return productRepository.findAllById(productIds);
     }
 
-    public List<Buy> consultBuysByUser(String userId) {
+    public List<Buy> consultBuysByUser(Long userId) {
         return buyRepository.findByBuyer_Id(userId);
     }
 
-    public List<Product> consultFavoriteProductsByUser(String userId) {
+    public List<Product> consultFavoriteProductsByUser(Long userId) {
         BuyerUser user = userRepository.findById(userId).orElse(null);
         return (user != null) ? user.getFavoriteProducts() : new ArrayList<>();
     }
