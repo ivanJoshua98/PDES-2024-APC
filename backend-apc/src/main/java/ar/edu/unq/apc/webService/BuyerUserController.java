@@ -2,9 +2,14 @@ package ar.edu.unq.apc.webService;
 
 import ar.edu.unq.apc.model.Buy;
 import ar.edu.unq.apc.model.User;
+import ar.edu.unq.apc.model.exceptions.IncorrectPasswordException;
+import ar.edu.unq.apc.model.exceptions.UserAlreadyExistsException;
+import ar.edu.unq.apc.model.exceptions.UserNotFoundException;
 import ar.edu.unq.apc.service.impl.BuyerUserService;
 import ar.edu.unq.apc.webService.dto.BuyerDTO;
+import ar.edu.unq.apc.webService.dto.LoginDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,16 +20,27 @@ public class BuyerUserController {
     @Autowired
     private BuyerUserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody BuyerDTO userDto) {
-        User newUser = userService.registerUser(userDto.getName(), userDto.getEmail(), userDto.getPassword());
-        return ResponseEntity.ok(newUser);
+    @PostMapping("/register")  //funciona
+    public ResponseEntity<String> register(@RequestBody BuyerDTO userDto) {
+        try {
+            User newUser = userService.registerUser(userDto.getName(), userDto.getEmail(), userDto.getPassword());
+            return ResponseEntity.ok("Registered successfully");
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: User with this email already exists");
+        }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody BuyerDTO userDto) {
-        User user = userService.login(userDto.getEmail(), userDto.getPassword());
-        return ResponseEntity.ok(user);
+    @PostMapping("/login")  //funciona
+    public ResponseEntity<String> login(@RequestBody LoginDTO userDto) {
+        try {
+            User user = userService.login(userDto.getEmail(), userDto.getPassword());
+            String welcomeMessage = "¡Welcome " + user.getName() + "!";
+            return ResponseEntity.ok(welcomeMessage);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Email not found");
+        } catch (IncorrectPasswordException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Incorrect password");
+        }
     }
 
     @PostMapping("/{buyerUserId}/favorite-product/{productId}")
