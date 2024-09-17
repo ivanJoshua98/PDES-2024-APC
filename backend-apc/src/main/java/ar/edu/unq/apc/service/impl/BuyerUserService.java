@@ -13,6 +13,7 @@ import ar.edu.unq.apc.persistence.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class BuyerUserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Transactional
     public BuyerUser registerUser(String name, String email, String password) {
         Optional<BuyerUser> existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
@@ -56,7 +58,7 @@ public class BuyerUserService {
     }
 
     public void addFavoriteProduct(Long buyerUserId, String productId) {
-        BuyerUser buyerUser = (BuyerUser) userRepository.findById(buyerUserId)
+        BuyerUser buyerUser = userRepository.findById(buyerUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Product product = productRepository.findById(productId)
