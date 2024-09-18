@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,8 +27,7 @@ public class MercadoLibreProxyService {
     //La busqueda en Mercado Libre solo permite 20 resultados
     private Integer limitOfResults = 20;
 
-    @Value("${integration.mercadolibre.api.token:NONE}")
-    private String token;
+    private String token = "APP_USR-7663246217238920-090518-d3b567855c670a8b9884c860b86193a6-1136666046";
 
 
     public List<Product> searchProductsByWords(String search){
@@ -84,7 +82,7 @@ public class MercadoLibreProxyService {
     public String executeGetRequest(String url){
         HttpEntity<Void> request;
         HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + "APP_USR-7663246217238920-090409-8b0591dd15b0a2a987480888809e3ca7-1136666046");
+		headers.set("Authorization", "Bearer " + token);
 		request = new HttpEntity<>(headers);
 
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
@@ -93,10 +91,10 @@ public class MercadoLibreProxyService {
     
     public Product deserializeProduct(JsonObject gsonObj){
         String title = gsonObj.get("title").getAsString();
-        String condition = gsonObj.get("condition").getAsString();
+        String condition = getStringFromJson("condition", gsonObj);
         String id = gsonObj.get("id").getAsString();
         String categoryId = gsonObj.get("category_id").getAsString();
-        Double price = (double) gsonObj.get("price").getAsInt();
+        Double price = getDoubleFromJson("price", gsonObj);
         String link = gsonObj.get("permalink").getAsString();
             
         JsonArray gsonArrPictures = gsonObj.get("pictures").getAsJsonArray();
@@ -133,5 +131,21 @@ public class MercadoLibreProxyService {
             attributes.add(attribute);
         }
         return attributes;
+    }
+
+    public String getStringFromJson(String value, JsonObject gson){
+        String result = "";
+        if(!gson.get(value).isJsonNull()) {
+            result = gson.get(value).getAsString();
+        }
+        return result;
+    }
+
+    public Double getDoubleFromJson(String value, JsonObject gson){
+        Double result = 0.0;
+        if(!gson.get(value).isJsonNull()) {
+            result = gson.get(value).getAsDouble();
+        }
+        return result;
     }
 }
