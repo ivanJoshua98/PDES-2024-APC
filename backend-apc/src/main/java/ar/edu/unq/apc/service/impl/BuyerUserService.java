@@ -3,8 +3,8 @@ package ar.edu.unq.apc.service.impl;
 import ar.edu.unq.apc.model.Buy;
 import ar.edu.unq.apc.model.BuyerUser;
 import ar.edu.unq.apc.model.Product;
-import ar.edu.unq.apc.model.User;
 import ar.edu.unq.apc.model.exceptions.IncorrectPasswordException;
+import ar.edu.unq.apc.model.exceptions.ProductNotFoundException;
 import ar.edu.unq.apc.model.exceptions.UserAlreadyExistsException;
 import ar.edu.unq.apc.model.exceptions.UserNotFoundException;
 import ar.edu.unq.apc.persistence.BuyRepository;
@@ -59,10 +59,10 @@ public class BuyerUserService {
 
     public void addFavoriteProduct(Long buyerUserId, String productId) {
         BuyerUser buyerUser = userRepository.findById(buyerUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         buyerUser.addFavoriteProduct(product);
         userRepository.save(buyerUser);
@@ -70,10 +70,10 @@ public class BuyerUserService {
 
     public void deleteFavoriteProduct(Long buyerUserId, String productId) {
         BuyerUser buyerUser = userRepository.findById(buyerUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
         buyerUser.deleteFavoriteProduct(product);
         userRepository.save(buyerUser);
@@ -81,7 +81,7 @@ public class BuyerUserService {
 
     public void addPurchase(Long buyerUserId, Buy buy) {
         BuyerUser buyerUser = userRepository.findById(buyerUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         buyerUser.addBuy(buy);
         buyRepository.save(buy);
