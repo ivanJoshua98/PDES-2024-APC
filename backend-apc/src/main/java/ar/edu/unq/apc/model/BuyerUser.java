@@ -23,8 +23,11 @@ public class BuyerUser extends User {
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Buy> purchasesMade = new ArrayList<>();
 
-    public BuyerUser(String id, String name, String email, String password) {
-        super(id, name, email, password);
+    public BuyerUser() {
+        super();
+    }
+    public BuyerUser(String name, String email, String password) {
+        super(name, email, password);
     }
 
 
@@ -48,8 +51,5 @@ public class BuyerUser extends User {
         purchasesMade.add(purchaseMade);
     }
 
-    public void removeBuy(Buy purchaseMade){
-        purchasesMade.remove(purchaseMade);
-    }
 }
 
