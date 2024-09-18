@@ -24,7 +24,7 @@ public class AdminUserController {
         return (user != null) ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
-    @GetMapping
+    @GetMapping("/getAllUsers")
     public ResponseEntity<List<BuyerUser>> getAllUsers() {
         List<BuyerUser> users = adminUserService.consultUsers();
         return ResponseEntity.ok(users);
@@ -60,10 +60,5 @@ public class AdminUserController {
         return ResponseEntity.ok(favoriteProducts);
     }
 
-    @GetMapping("/buys")
-    public ResponseEntity<List<Buy>> getAllBuys() {
-        List<Buy> buys = adminUserService.consultAllBuys();
-        return ResponseEntity.ok(buys);
-    }
 }
 

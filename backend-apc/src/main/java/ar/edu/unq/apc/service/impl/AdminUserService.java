@@ -54,9 +54,6 @@ public class AdminUserService {
         return (user != null) ? user.getFavoriteProducts() : new ArrayList<>();
     }
 
-    public List<Buy> consultAllBuys() {
-        return buyRepository.findAll();
-    }
 }
 
 
