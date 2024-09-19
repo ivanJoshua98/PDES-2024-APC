@@ -4,6 +4,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +28,15 @@ public class MercadoLibreProxyService {
     //La busqueda en Mercado Libre solo permite 20 resultados
     private Integer limitOfResults = 20;
 
-    private String token = "APP_USR-7663246217238920-090518-d3b567855c670a8b9884c860b86193a6-1136666046";
+    @Value("${integration.mercadolibre.api.token:NONE}")
+    private String token;
+
+    @Value("${integration.mercadolibre.api.url:NONE}")
+    private String mercadoLibreApiURL;
 
 
     public List<Product> searchProductsByWords(String search){
-        String jsonResponseFromSearch = executeGetRequest("https://api.mercadolibre.com/sites/MLA/search?q=" + search);
+        String jsonResponseFromSearch = executeGetRequest(mercadoLibreApiURL + "/sites/MLA/search?q=" + search);
         List<String> productsId = getProductsIdFromSearchResults(jsonResponseFromSearch);
         return getProductsByIds(productsId);
     }
@@ -58,7 +63,7 @@ public class MercadoLibreProxyService {
     
     public List<Product> getProductsByIds( List<String> ids ){
         String idsToSearch = String.join(",", ids);
-        String jsonResult = executeGetRequest("https://api.mercadolibre.com/items?ids=" +
+        String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
             idsToSearch + "&attributes=id,price,category_id,title,pictures,condition,permalink,attributes");
 
         JsonParser parser = new JsonParser();
