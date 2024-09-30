@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import ar.edu.unq.apc.model.Attribute;
 import ar.edu.unq.apc.model.Product;
 
 public class MercadoLibreProxyServiceTest {
@@ -52,44 +51,8 @@ public class MercadoLibreProxyServiceTest {
         assertEquals(product.getTitle(), "Producto generico");
         assertEquals(product.getCategoryId(), "MLA56542");
         assertEquals(product.getPrice(), 1231.432);
-        assertEquals(product.getAttributes(), List.of());
         assertEquals(product.getPictures(), List.of());
         assertEquals(product.getCondition(), "Nuevo");
-    }
-
-
-    @Test
-    void whenAJsonObjectContainsAListOfAttributeValuesThenItExtractsAListOfAttributeObjectTest() {
-
-        String jsonAttributesWithMoreValues = "{" +
-                                                "\"attributes\":[" +
-                                                    "{" +
-                                                        "\"name\":\"condition\"," +
-                                                        "\"value_name\":\"new\"," +
-                                                        "\"id\":\"MLA1325892\"," +
-                                                        "\"category\":\"MLA568721\"" +
-                                                    "}," +
-                                                    "{" +
-                                                        "\"name\":\"color\"," +
-                                                        "\"value_name\":\"blue\"," +
-                                                        "\"id\":\"MLA34241\"," +
-                                                        "\"category\":\"MLA454323\"" +
-                                                    "}" +
-                                                "]" +
-                                            "}";
-
-    JsonObject gsonObj = jsonParser.parse(jsonAttributesWithMoreValues).getAsJsonObject();                                       
-
-    JsonArray gsonArrPictures = gsonObj.get("attributes").getAsJsonArray();
-    
-    List<Attribute> pictures = this.mercadoLibreProxyService.extractAttributes(gsonArrPictures);
-
-    assertEquals(pictures.get(0).getName(), "condition");
-    assertEquals(pictures.get(0).getValue(), "new");
-
-    assertEquals(pictures.get(1).getName(), "color");
-    assertEquals(pictures.get(1).getValue(), "blue");
-
     }
 
 

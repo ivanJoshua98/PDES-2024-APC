@@ -45,7 +45,6 @@ public class ProductController {
                             product.getCategoryId(),
                             product.getPrice(),
                             product.getPictures(),
-                            product.getAttributes(),
                             product.getCondition()
                             );
     }
