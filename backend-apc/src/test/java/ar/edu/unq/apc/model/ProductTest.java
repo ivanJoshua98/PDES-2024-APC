@@ -16,14 +16,6 @@ public class ProductTest {
         this.anyProduct = new Product();
     }
     
-    @Test
-    void whenItSetsAttributesOfAnyProductThenItReturnsNewAttributesTest() {
-        List<Attribute> newAttributes = List.of(new Attribute("Marca", "Marolio"));
-        anyProduct.setAttributes(newAttributes);
-
-        assertEquals(anyProduct.getAttributes(), newAttributes);
-
-    }
 
     @Test
     void whenItSetsTheCategoryIdOfAnyProductThenItReturnsANewCategoryIdTest() {

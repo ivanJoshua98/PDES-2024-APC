@@ -17,7 +17,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import ar.edu.unq.apc.model.Attribute;
 import ar.edu.unq.apc.model.Product;
 
 @Service
@@ -64,7 +63,7 @@ public class MercadoLibreProxyService {
     public List<Product> getProductsByIds( List<String> ids ){
         String idsToSearch = String.join(",", ids);
         String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
-            idsToSearch + "&attributes=id,price,category_id,title,pictures,condition,permalink,attributes");
+            idsToSearch + "&attributes=id,price,category_id,title,pictures,condition,permalink");
 
         JsonParser parser = new JsonParser();
         List<Product> products = new ArrayList<Product>();
@@ -105,10 +104,7 @@ public class MercadoLibreProxyService {
         JsonArray gsonArrPictures = gsonObj.get("pictures").getAsJsonArray();
         List<String> pictures = extractUrlPictures(gsonArrPictures);
 
-        JsonArray gsonArrAtributes = gsonObj.get("attributes").getAsJsonArray();
-        List<Attribute> attributes = extractAttributes(gsonArrAtributes);
-
-        return new Product(id, link, title, categoryId, price, pictures, attributes, condition);
+        return new Product(id, link, title, categoryId, price, pictures, condition);
     }
 
 
@@ -123,7 +119,7 @@ public class MercadoLibreProxyService {
     }
 
 
-    public List<Attribute> extractAttributes(JsonArray gsonArr){
+    /*public List<Attribute> extractAttributes(JsonArray gsonArr){
         List<Attribute> attributes = new ArrayList<Attribute>();
         for (JsonElement obj : gsonArr) {
             JsonObject gsonObj = obj.getAsJsonObject();
@@ -136,7 +132,7 @@ public class MercadoLibreProxyService {
             attributes.add(attribute);
         }
         return attributes;
-    }
+    }*/
 
     public String getStringFromJson(String value, JsonObject gson){
         String result = "";

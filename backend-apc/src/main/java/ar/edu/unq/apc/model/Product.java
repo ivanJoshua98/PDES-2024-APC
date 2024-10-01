@@ -17,15 +17,11 @@ public class Product {
     private String title;
     private String categoryId;
     private Double price;
+    private String condition;
 
     @ElementCollection
     @CollectionTable(name = "product_pictures", joinColumns = @JoinColumn(name = "product_id"))
     private List<String> pictures;
-
-    @ElementCollection
-    @CollectionTable(name = "product_attributes", joinColumns = @JoinColumn(name = "product_id"))
-    private List<Attribute> attributes;
-    private String condition;
 
 
     public Product() {
@@ -33,14 +29,13 @@ public class Product {
     }
 
     public Product(String id, String link, String title, String categoryId, Double price, List<String> pictures,
-            List<Attribute> attributes, String condition) {
+            String condition) {
         this.id = id;
         this.link = link;
         this.title = title;
         this.categoryId = categoryId;
         this.price = price;
         this.pictures = pictures;
-        this.attributes = attributes;
         this.condition = condition;
     }
 
@@ -91,14 +86,6 @@ public class Product {
 
     public void setPictures(List<String> pictures) {
         this.pictures = pictures;
-    }
-
-    public List<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<Attribute> attributes) {
-        this.attributes = attributes;
     }
 
     public String getCondition() {
