@@ -35,6 +35,26 @@ public class MercadoLibreProxyService {
     private String mercadoLibreApiURL;
 
 
+    public Product getProductById(String id){
+        String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
+            id + "&attributes=id,price,category_id,title,pictures,condition,permalink");
+
+        JsonParser parser = new JsonParser();
+        Product product = new Product();
+    
+        // Obtain Array
+        JsonArray gsonArr = parser.parse(jsonResult).getAsJsonArray();
+    
+        for (JsonElement obj : gsonArr) {
+            // Object of array
+           JsonObject gsonObj = obj.getAsJsonObject();
+           JsonObject body = gsonObj.get("body").getAsJsonObject();
+            product = deserializeProduct(body);
+        }
+
+        return product;
+    }
+
     public List<Product> searchProductsByWords(String search){
         String jsonResponseFromSearch = executeGetRequest(mercadoLibreApiURL + "/sites/MLA/search?q=" + search);
         List<String> productsId = getProductsIdFromSearchResults(jsonResponseFromSearch);
@@ -64,7 +84,7 @@ public class MercadoLibreProxyService {
     public List<Product> getProductsByIds( List<String> ids ){
         String idsToSearch = String.join(",", ids);
         String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
-            idsToSearch + "&attributes=id,price,category_id,title,pictures,condition,permalink,attributes");
+            idsToSearch + "&attributes=id,price,category_id,title,pictures,condition,permalink");
 
         JsonParser parser = new JsonParser();
         List<Product> products = new ArrayList<Product>();
@@ -105,10 +125,7 @@ public class MercadoLibreProxyService {
         JsonArray gsonArrPictures = gsonObj.get("pictures").getAsJsonArray();
         List<String> pictures = extractUrlPictures(gsonArrPictures);
 
-        JsonArray gsonArrAtributes = gsonObj.get("attributes").getAsJsonArray();
-        List<Attribute> attributes = extractAttributes(gsonArrAtributes);
-
-        return new Product(id, link, title, categoryId, price, pictures, attributes, condition);
+        return new Product(id, link, title, categoryId, price, pictures, condition);
     }
 
 
@@ -120,22 +137,6 @@ public class MercadoLibreProxyService {
             pictures.add(picture);
         }
         return pictures;
-    }
-
-
-    public List<Attribute> extractAttributes(JsonArray gsonArr){
-        List<Attribute> attributes = new ArrayList<Attribute>();
-        for (JsonElement obj : gsonArr) {
-            JsonObject gsonObj = obj.getAsJsonObject();
-            String attributeName = gsonObj.get("name").getAsString();
-            String attributeValue = "";
-            if(!gsonObj.get("value_name").isJsonNull()){
-                attributeValue = gsonObj.get("value_name").getAsString();
-            }
-            Attribute attribute = new Attribute(attributeName, attributeValue); 
-            attributes.add(attribute);
-        }
-        return attributes;
     }
 
     public String getStringFromJson(String value, JsonObject gson){
@@ -152,5 +153,35 @@ public class MercadoLibreProxyService {
             result = gson.get(value).getAsDouble();
         }
         return result;
+    }
+
+
+    public List<Attribute> getProductAttributes(String productId){
+        String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
+            productId + "&attributes=attributes");
+
+        JsonParser parser = new JsonParser();
+        JsonArray gsonArr = parser.parse(jsonResult).getAsJsonArray();
+        JsonObject body = new JsonObject();
+    
+        for (JsonElement obj : gsonArr) {
+            // Object of array
+           JsonObject gsonObj = obj.getAsJsonObject();
+           body = gsonObj.get("body").getAsJsonObject();
+        }
+        return extractAttributes(body.get("attributes").getAsJsonArray());
+    }
+
+
+    public List<Attribute> extractAttributes(JsonArray gsonArr){
+        List<Attribute> attributes = new ArrayList<Attribute>();
+        for (JsonElement obj : gsonArr) {
+            JsonObject gsonObj = obj.getAsJsonObject();
+            String attributeName = getStringFromJson("name", gsonObj);
+            String attributeValue = getStringFromJson("value_name", gsonObj);
+            Attribute attribute = new Attribute(attributeName, attributeValue); 
+            attributes.add(attribute);
+        }
+        return attributes;
     }
 }

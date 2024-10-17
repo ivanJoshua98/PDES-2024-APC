@@ -38,6 +38,18 @@ public class ProductController {
 	}
 
 
+    @Operation(summary = "Get product from Mercado Libre")
+    @GetMapping("/search/item/{id}")
+	public ResponseEntity<ProductDTO> getProductsByIdFromML(
+        @Parameter(description = "The id that needs to be fetched", required = true)
+        @PathVariable String id){
+        
+        Product product = this.mercadoLibre.getProductById(id);
+        return ResponseEntity.ok()
+                             .body(convertProductEntityToProductDTO(product));
+
+    }
+
     private ProductDTO convertProductEntityToProductDTO(Product product){
         return new ProductDTO(product.getId(),
                             product.getLink(),
@@ -45,7 +57,6 @@ public class ProductController {
                             product.getCategoryId(),
                             product.getPrice(),
                             product.getPictures(),
-                            product.getAttributes(),
                             product.getCondition()
                             );
     }
