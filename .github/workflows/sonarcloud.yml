@@ -1,30 +1,26 @@
-name: SonarCloud Scan
-
+name: SonarCloud
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [main, develop]
     paths: 
        - 'backend-apc/**'
   pull_request:
-    branches: [ "main", "develop" ]
-    types:
-       - opened
+    types: [opened, synchronize, reopened]
     paths: 
        - 'backend-apc/**'
-
 jobs:
-  sonarcloud:
-    name: SonarCloud
+  build:
+    name: Build and analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: 'adopt' 
+          distribution: 'adopt' # Alternative distribution options are available
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -38,10 +34,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Build and analyze
+        with:
+          build-root-directory: ./backend-apc 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          arguments: build
-          build-root-directory: ./backend-apc
-        run: ./gradlew build sonar --info      
+        run: ./gradlew build sonar --info
