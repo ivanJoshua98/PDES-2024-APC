@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main", "develop" ]
     paths: 
-       - 'frontend-apc/**'
+       - 'backend-apc/**'
   pull_request:
     branches: [ "main", "develop" ]
     types:
        - opened
     paths: 
-       - 'frontend-apc/**'
+       - 'backend-apc/**'
 
 jobs:
   sonarcloud:
