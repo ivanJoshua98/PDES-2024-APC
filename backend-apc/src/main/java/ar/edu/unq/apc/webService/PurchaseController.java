@@ -1,7 +1,6 @@
 package ar.edu.unq.apc.webService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,11 +44,10 @@ public class PurchaseController {
     @PostMapping("/buy")
     public ResponseEntity<PurchaseDTO> buy(@RequestBody PurchaseDTO purchase){
         UserModel buyer = this.userService.getUserById(purchase.getBuyerId());
-        //List<Product> soldProducts = this.mercadoLibre.getProductsByIds(purchase.getSoldProductsIds());
         List<Product> soldProducts = purchase.getSoldProductsIds().stream().map(id -> this.mercadoLibre.getProductById(id)).toList();
         Purchase newPurchase = new Purchase(purchase.getSalePrice(), soldProducts, buyer);
 
-        soldProducts.stream().distinct().collect(Collectors.toList()).forEach(
+        soldProducts.stream().distinct().toList().forEach(
             product -> this.productService.saveProduct(product)
         );
 
@@ -69,7 +67,7 @@ public class PurchaseController {
     
     private PurchaseDTO convertPurchaseEntityToPurchaseDTO(Purchase purchase){
         return new PurchaseDTO( purchase.getSalePrice(),
-                                purchase.getSoldProducts().stream().map(product -> product.getId()).collect(Collectors.toList()),
+                                purchase.getSoldProducts().stream().map(Product::getId).toList(),
                                 purchase.getBuyer().getId());
     }
 

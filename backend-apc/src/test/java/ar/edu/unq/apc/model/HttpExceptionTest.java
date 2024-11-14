@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-public class HttpExceptionTest {
+class HttpExceptionTest {
 
     private String anyMessage = "message";
     private HttpStatus anyHttpStatus = HttpStatus.NOT_FOUND;

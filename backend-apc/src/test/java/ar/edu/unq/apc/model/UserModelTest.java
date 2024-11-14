@@ -9,7 +9,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class UserModelTest {
+class UserModelTest {
 
     private UserModel anyUser;
 
