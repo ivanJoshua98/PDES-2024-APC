@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,9 +23,6 @@ public class Purchase {
     private Double salePrice;
 
     
-    /*@ElementCollection
-    @CollectionTable(name = "sold_products",
-                     joinColumns = @JoinColumn(name = "purchase_id"))*/
     @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable( name="sold_products",
                 joinColumns = @JoinColumn(name="purchase_id"),

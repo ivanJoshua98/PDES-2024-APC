@@ -35,7 +35,7 @@ public class UserModel {
 
     
     public UserModel() {
-        super();
+        this.roles = new ArrayList<>();
     }
 
     public UserModel(String userName, String email, String password) {
