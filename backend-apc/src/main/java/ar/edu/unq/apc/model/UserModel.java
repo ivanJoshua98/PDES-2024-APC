@@ -33,21 +33,9 @@ public class UserModel {
                 inverseJoinColumns = @JoinColumn(name="role_id"))
     private List<Role> roles;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable( name="purchases_by_user",
-                joinColumns = @JoinColumn(name="user_id"),
-                inverseJoinColumns = @JoinColumn(name="purchase_id"))
-    private List<Purchase> purchases;
-    
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable( name="favorites",
-                joinColumns = @JoinColumn(name="user_id"),
-                inverseJoinColumns = @JoinColumn(name="product_id"))
-    private List<Product> favorites;
-
     
     public UserModel() {
-        super();
+        this.roles = new ArrayList<>();
     }
 
     public UserModel(String userName, String email, String password) {
@@ -55,8 +43,6 @@ public class UserModel {
         this.email = email;
         this.password = password;
         this.roles = new ArrayList<>();
-        this.purchases = new ArrayList<>();
-        this.favorites = new ArrayList<>();
     }
 
     public UUID getId() {
@@ -97,22 +83,6 @@ public class UserModel {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
-    }
-
-    public List<Purchase> getPurchases() {
-        return purchases;
-    }
-
-    public void setPurchases(List<Purchase> purchases) {
-        this.purchases = purchases;
-    }
-
-    public List<Product> getFavorites() {
-        return favorites;
-    }
-
-    public void setFavorites(List<Product> favorites) {
-        this.favorites = favorites;
     }
     
     public void addRole(Role role) {

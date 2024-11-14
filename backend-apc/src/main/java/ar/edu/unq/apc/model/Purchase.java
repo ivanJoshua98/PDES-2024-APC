@@ -22,7 +22,8 @@ public class Purchase {
 
     private Double salePrice;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    
+    @ManyToMany(cascade = {CascadeType.MERGE})
     @JoinTable( name="sold_products",
                 joinColumns = @JoinColumn(name="purchase_id"),
                 inverseJoinColumns = @JoinColumn(name="product_id"))
