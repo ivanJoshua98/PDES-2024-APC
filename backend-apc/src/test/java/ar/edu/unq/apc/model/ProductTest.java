@@ -2,8 +2,6 @@ package ar.edu.unq.apc.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,12 +29,7 @@ public class ProductTest {
         assertEquals(anyProduct.getCondition(), "new");
     }
 
-    @Test
-    void whenItSetsTheIdOfAnyProductThenItReturnsANewIdTest() {
-        anyProduct.setId("MLA2312343241");
 
-        assertEquals(anyProduct.getId(), "MLA2312343241");
-    }
 
     @Test
     void whenItSetsTheLinkOfAnyProductThenItReturnsANewLinkTest() {
@@ -45,14 +38,6 @@ public class ProductTest {
         assertEquals(anyProduct.getLink(), "https://mercadoLibre.com/MLA2232123");
     }
 
-    @Test
-    void whenItSetsThePicturesOfAnyProductThenItReturnsNewPicturesTest() {
-        List<String> newPictures = List.of("https://picture/a12348372891713",
-                                           "https://picture/b45823472343");
-        anyProduct.setPictures(newPictures);
-        
-        assertEquals(anyProduct.getPictures(), newPictures);
-    }
 
     @Test
     void whenItSetsThePriceOfAnyProductThenItReturnsANewPriceTest() {

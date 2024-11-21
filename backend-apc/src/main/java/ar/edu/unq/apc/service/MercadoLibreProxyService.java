@@ -18,7 +18,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import ar.edu.unq.apc.model.Attribute;
-import ar.edu.unq.apc.model.Product;
+import ar.edu.unq.apc.model.MercadoLibreProduct;
 
 @Service
 public class MercadoLibreProxyService {
@@ -35,12 +35,12 @@ public class MercadoLibreProxyService {
     private String mercadoLibreApiURL;
 
 
-    public Product getProductById(String id){
+    public MercadoLibreProduct getProductById(String id){
         String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
             id + "&attributes=id,price,category_id,title,pictures,condition,permalink");
 
         JsonParser parser = new JsonParser();
-        Product product = new Product();
+        MercadoLibreProduct product = new MercadoLibreProduct();
     
         // Obtain Array
         JsonArray gsonArr = parser.parse(jsonResult).getAsJsonArray();
@@ -55,7 +55,7 @@ public class MercadoLibreProxyService {
         return product;
     }
 
-    public List<Product> searchProductsByWords(String search){
+    public List<MercadoLibreProduct> searchProductsByWords(String search){
         String jsonResponseFromSearch = executeGetRequest(mercadoLibreApiURL + "/sites/MLA/search?q=" + search);
         List<String> productsId = getProductsIdFromSearchResults(jsonResponseFromSearch);
         return getProductsByIds(productsId);
@@ -81,13 +81,13 @@ public class MercadoLibreProxyService {
     }
 
     
-    public List<Product> getProductsByIds( List<String> ids ){
+    public List<MercadoLibreProduct> getProductsByIds( List<String> ids ){
         String idsToSearch = String.join(",", ids);
         String jsonResult = executeGetRequest(mercadoLibreApiURL + "/items?ids=" +
             idsToSearch + "&attributes=id,price,category_id,title,pictures,condition,permalink");
 
         JsonParser parser = new JsonParser();
-        List<Product> products = new ArrayList<Product>();
+        List<MercadoLibreProduct> products = new ArrayList<MercadoLibreProduct>();
 
         // Obtain Array
         JsonArray gsonArr = parser.parse(jsonResult).getAsJsonArray();
@@ -114,7 +114,7 @@ public class MercadoLibreProxyService {
         return response.getBody();
     }
     
-    public Product deserializeProduct(JsonObject gsonObj){
+    public MercadoLibreProduct deserializeProduct(JsonObject gsonObj){
         String title = gsonObj.get("title").getAsString();
         String condition = getStringFromJson("condition", gsonObj);
         String id = gsonObj.get("id").getAsString();
@@ -125,7 +125,7 @@ public class MercadoLibreProxyService {
         JsonArray gsonArrPictures = gsonObj.get("pictures").getAsJsonArray();
         List<String> pictures = extractUrlPictures(gsonArrPictures);
 
-        return new Product(id, link, title, categoryId, price, pictures, condition);
+        return new MercadoLibreProduct(id, link, title, categoryId, price, condition, pictures);
     }
 
 

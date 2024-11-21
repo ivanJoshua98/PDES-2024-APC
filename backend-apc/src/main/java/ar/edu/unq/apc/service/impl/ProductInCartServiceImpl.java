@@ -1,37 +1,43 @@
 package ar.edu.unq.apc.service.impl;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import ar.edu.unq.apc.model.HttpException;
-import ar.edu.unq.apc.model.Product;
-import ar.edu.unq.apc.persistence.ProductRepository;
-import ar.edu.unq.apc.service.ProductService;
+import ar.edu.unq.apc.model.ProductInCart;
+import ar.edu.unq.apc.persistence.ProductInCartRepository;
+import ar.edu.unq.apc.service.ProductInCartService;
 
 @Service
-public class ProductServiceImpl implements ProductService{
+public class ProductInCartServiceImpl implements ProductInCartService{
 
 
     @Autowired
-    private ProductRepository productRepository;
+    private ProductInCartRepository productRepository;
     
 
     @Override
-    public Product saveProduct(Product newProduct) {
+    public ProductInCart saveProduct(ProductInCart newProduct) {
         return this.productRepository.save(newProduct);
     }
 
     @Override
-    public Product getProductById(String id) {
+    public ProductInCart getProductById(UUID id) {
         return this.productRepository.findById(id).orElseThrow(() -> new HttpException("Product not found by id: " + id, HttpStatus.NOT_FOUND));
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<ProductInCart> getAllProducts() {
         return this.productRepository.findAll();
+    }
+
+    @Override
+    public void deleteProductById(UUID id) {
+        this.productRepository.deleteById(id);
     }
     
 }
