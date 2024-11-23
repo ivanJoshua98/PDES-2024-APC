@@ -39,5 +39,10 @@ public class ProductInCartServiceImpl implements ProductInCartService{
     public void deleteProductById(UUID id) {
         this.productRepository.deleteById(id);
     }
+
+    @Override
+    public ProductInCart getProductByMercadoLibreId(String id) {
+        return this.productRepository.findByMercadoLibreId(id).orElseThrow(() -> new HttpException("Product not found by Mercado Libre id: " + id, HttpStatus.NOT_FOUND));
+    }
     
 }

@@ -14,6 +14,7 @@ public class Product {
 
     public Product() {
         super();
+        this.price = 0.0;
     }
 
     public Product(String link, String title, String categoryId, Double price, String condition) {

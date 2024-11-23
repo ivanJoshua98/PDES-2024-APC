@@ -1,5 +1,6 @@
 package ar.edu.unq.apc.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,8 @@ public class ShoppingCart {
 
     public ShoppingCart(){
         super();
-        this.cart = List.of();
+        this.cart = new ArrayList<>();
+        this.totalAmountPurchase = 0.0;
     }
 
     public UUID getId() {
@@ -108,7 +110,7 @@ public class ShoppingCart {
             addProductOneTime(product);
         } else {
             this.cart.add(product);
-            setTotalAmountPurchase(totalAmountPurchase + product.getPrice());
+            setTotalAmountPurchase(totalAmountPurchase + product.getPrice() * product.getAmount());
         }
     }
 

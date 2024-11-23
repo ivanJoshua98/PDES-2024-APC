@@ -14,5 +14,7 @@ public interface ProductInCartService {
     List<ProductInCart> getAllProducts();
 
     void deleteProductById(UUID id);
+
+    ProductInCart getProductByMercadoLibreId(String id);
     
 }
