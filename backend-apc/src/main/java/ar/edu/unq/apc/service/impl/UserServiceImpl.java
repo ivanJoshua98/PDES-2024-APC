@@ -58,5 +58,10 @@ public class UserServiceImpl implements UserService {
             throw new HttpException("User name already used", HttpStatus.BAD_REQUEST);
         }
     }
+
+    @Override
+    public Boolean existsByEmail(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
     
 }

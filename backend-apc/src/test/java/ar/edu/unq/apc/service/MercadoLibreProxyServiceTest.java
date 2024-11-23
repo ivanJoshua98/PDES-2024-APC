@@ -10,7 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import ar.edu.unq.apc.model.Product;
+import ar.edu.unq.apc.model.MercadoLibreProduct;
 
 public class MercadoLibreProxyServiceTest {
 
@@ -44,7 +44,7 @@ public class MercadoLibreProxyServiceTest {
 
         anyJsonObjectWithMoreValues =  jsonParser.parse(jsonProductWithMoreValues).getAsJsonObject();
 
-        Product product = this.mercadoLibreProxyService.deserializeProduct(anyJsonObjectWithMoreValues);
+        MercadoLibreProduct product = this.mercadoLibreProxyService.deserializeProduct(anyJsonObjectWithMoreValues);
 
         assertEquals(product.getId(), "MLA4521");
         assertEquals(product.getLink(), "http://product.com");

@@ -82,10 +82,11 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			)
         	.authorizeHttpRequests(auth -> auth
-				.requestMatchers(mvcMatcherBuilder.pattern("/apc/**")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui/**")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs/**")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/error")).permitAll()
+				.requestMatchers(mvcMatcherBuilder.pattern("/apc/register")).permitAll()
+				.requestMatchers(mvcMatcherBuilder.pattern("/apc/log-in")).permitAll()
                 .anyRequest().authenticated()
         	);	
 		http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
