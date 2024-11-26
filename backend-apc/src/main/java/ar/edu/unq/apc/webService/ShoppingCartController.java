@@ -176,6 +176,16 @@ public class ShoppingCartController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(shoppingCartId.toString());
     }
 
+
+    @Operation(summary = "Get all purchased shopping carts by user")
+    @GetMapping("/allPurchases/{userId}")
+    public ResponseEntity<List<ShoppingCartDTO>> getAllPurchasesByUser(@PathVariable String userId){
+        UserModel buyer = this.userService.getUserById(UUID.fromString(userId));
+        List<ShoppingCart> purchasedCarts = this.shoppingCartService.getAllPurchasedShoppingCartsByUser(buyer);
+
+        return ResponseEntity.ok().body(purchasedCarts.stream().map(this::convertShoppingCartEntityToShoppingCartDTO).toList());
+    }
+
     
     private ShoppingCartDTO convertShoppingCartEntityToShoppingCartDTO(ShoppingCart shoppingCart){
         ShoppingCartDTO dto = new ShoppingCartDTO(  shoppingCart.getId(), 

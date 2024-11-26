@@ -59,5 +59,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService{
     public ShoppingCart getShoppingCartInProgressByBuyer(UserModel buyer) {
         return this.shoppingCartRepository.findByBuyerAndCartState(buyer, CartState.INPROGRESS).orElseThrow(() -> new HttpException("Cart in progress not found", HttpStatus.NOT_FOUND));
     }
+
+    @Override
+    public List<ShoppingCart> getAllPurchasedShoppingCartsByUser(UserModel buyer) {
+        return this.shoppingCartRepository.findAllByBuyerAndCartState(buyer, CartState.SOLD);
+    }
     
 }
