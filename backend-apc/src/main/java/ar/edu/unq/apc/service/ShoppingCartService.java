@@ -22,5 +22,7 @@ public interface ShoppingCartService {
     void deleteShoppingCartById(UUID id);
 
     ShoppingCart getShoppingCartInProgressByBuyer(UserModel buyer);
+
+    List<ShoppingCart> getAllPurchasedShoppingCartsByUser(UserModel buyer);
     
 }

@@ -1,5 +1,6 @@
 package ar.edu.unq.apc.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,6 +16,8 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, UUID
     
     Optional<ShoppingCart> findByBuyer(UserModel buyer);
 
-    Optional<ShoppingCart> findByBuyerAndCartState(UserModel buyer, CartState inprogress);
+    Optional<ShoppingCart> findByBuyerAndCartState(UserModel buyer, CartState cartState);
+
+    List<ShoppingCart> findAllByBuyerAndCartState(UserModel buyer, CartState cartState);
     
 }
