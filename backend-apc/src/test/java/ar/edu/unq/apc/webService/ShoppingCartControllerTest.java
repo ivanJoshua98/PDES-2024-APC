@@ -272,6 +272,15 @@ public class ShoppingCartControllerTest {
         assertEquals(exception.getMessage(), "Cart not found by id: " + cartId);
     }
 
+    @Test
+    void getAllFinishedShoppingCartsOfAUserSuccesfullyTest() {
+        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithToken);
+        ResponseEntity<ShoppingCartDTO[]> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/allPurchases/"+ anyUser.getId(),
+            HttpMethod.GET,
+            getRequest,
+            ShoppingCartDTO[].class);
 
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+    }
 
 }
