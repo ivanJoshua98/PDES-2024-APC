@@ -63,5 +63,15 @@ public class UserServiceImpl implements UserService {
     public Boolean existsByEmail(String email) {
         return this.userRepository.existsByEmail(email);
     }
+
+    @Override
+    public UserModel updateUser(UserModel user) {
+        if (existsByEmail(user.getEmail())){
+            return this.userRepository.save(user);
+        } else {
+            throw new HttpException("User not found", HttpStatus.NOT_FOUND);
+        }
+        
+    }
     
 }
