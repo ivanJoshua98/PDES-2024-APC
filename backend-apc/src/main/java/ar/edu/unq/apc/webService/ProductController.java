@@ -1,5 +1,6 @@
 package ar.edu.unq.apc.webService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,17 @@ public class ProductController {
 
     }
 
+    @Operation(summary = "Get products by id from Mercado Libre. Example ids = MLA111111,MLA222222,...")
+    @GetMapping("/search/items/{ids}")
+    public ResponseEntity<List<MercadoLibreProductDTO>> getAllProductsById(@PathVariable String ids){
+        //Limitacion de Mercado Libre, solo permite buscar de a 20
+        List<String> groupBy20 = getAsList(ids.split(","));
+
+        List<MercadoLibreProduct> products = this.mercadoLibre.getProductsByIds(groupBy20);
+
+        return ResponseEntity.ok().body(products.stream().map(this::convertProductEntityToProductDTO).toList());
+    }
+
     private MercadoLibreProductDTO convertProductEntityToProductDTO(MercadoLibreProduct product){
         return new MercadoLibreProductDTO(product.getId(),
                             product.getLink(),
@@ -60,6 +72,14 @@ public class ProductController {
                             product.getCondition()
                             );
     }
-     
+
+    private List<String> getAsList(String[] array){
+        List<String> list = new ArrayList<>();
+        for(int i = 0; i < array.length; i++){
+            list.add(array[i]);
+        }
+        return list;
+    } 
+
     
 }

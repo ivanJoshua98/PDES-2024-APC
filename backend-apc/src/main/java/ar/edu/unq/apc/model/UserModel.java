@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,9 +35,14 @@ public class UserModel {
                 inverseJoinColumns = @JoinColumn(name="role_id"))
     private List<Role> roles;
 
+    @ElementCollection
+    @CollectionTable(name = "favorite-products", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    private List<String> favoriteProducts;
+
     
     public UserModel() {
         this.roles = new ArrayList<>();
+        this.favoriteProducts = new ArrayList<>();
     }
 
     public UserModel(String userName, String email, String password) {
@@ -43,6 +50,7 @@ public class UserModel {
         this.email = email;
         this.password = password;
         this.roles = new ArrayList<>();
+        this.favoriteProducts = new ArrayList<>();
     }
 
     public UUID getId() {
@@ -88,4 +96,28 @@ public class UserModel {
     public void addRole(Role role) {
 		this.roles.add(role);
 	}
+
+    public List<String> getFavoriteProducts() {
+        return favoriteProducts;
+    }
+
+    public void setFavoriteProducts(List<String> favoriteProducts) {
+        this.favoriteProducts = favoriteProducts;
+    }
+
+    public Boolean isFavoriteProduct(String productId){
+        return this.favoriteProducts.contains(productId);
+    }
+
+    public void addFavoriteProduct(String productId){
+        if(!isFavoriteProduct(productId)){
+            this.favoriteProducts.add(productId);
+        }
+    }
+
+    public void removeFavoriteProduct(String productId){
+        this.favoriteProducts.remove(productId);
+    }
+
+
 }
