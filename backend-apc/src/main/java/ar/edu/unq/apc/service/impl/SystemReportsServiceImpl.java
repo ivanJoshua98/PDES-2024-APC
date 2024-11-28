@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import ar.edu.unq.apc.model.FavoriteProductInTopFive;
 import ar.edu.unq.apc.model.HttpException;
 import ar.edu.unq.apc.model.MercadoLibreProduct;
 import ar.edu.unq.apc.model.ProductsPurchasedByUserCounter;
@@ -42,9 +43,8 @@ public class SystemReportsServiceImpl implements SystemReportService {
     }
 
     @Override
-    public List<MercadoLibreProduct> getFavoriteProductsTopFive() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFavoriteProductsTopFive'");
+    public List<FavoriteProductInTopFive> getFavoriteProductsTopFive() {
+        return this.counterByUserRepository.getFavoriteProductsTopFive();
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import ar.edu.unq.apc.model.FavoriteProductInTopFive;
 import ar.edu.unq.apc.model.ProductsPurchasedByUserCounter;
 import ar.edu.unq.apc.model.UserWithMostPurchases;
 
@@ -20,5 +21,13 @@ public interface ProductsPurchasedByUserCounterRepository extends JpaRepository<
             "ORDER BY products_purchases_count DESC "+
             "LIMIT 5")
     List<UserWithMostPurchases> getUsersWithMostPurchasedProducts();
+
+    @Query(nativeQuery = true, value = 
+            "SELECT favorite_products AS product_id, count(favorite_products) AS times_chosen_favorite " +
+            "FROM \"favorite-products\" " +
+            "GROUP BY product_id having count (favorite_products)>=1 " +
+            "ORDER BY times_chosen_favorite DESC " +
+            "LIMIT 5")
+    List<FavoriteProductInTopFive> getFavoriteProductsTopFive();
     
 }

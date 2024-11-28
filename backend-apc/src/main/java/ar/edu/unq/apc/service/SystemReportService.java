@@ -3,6 +3,7 @@ package ar.edu.unq.apc.service;
 import java.util.List;
 import java.util.UUID;
 
+import ar.edu.unq.apc.model.FavoriteProductInTopFive;
 import ar.edu.unq.apc.model.MercadoLibreProduct;
 import ar.edu.unq.apc.model.ProductsPurchasedByUserCounter;
 import ar.edu.unq.apc.model.PurchasedProductCounter;
@@ -15,7 +16,7 @@ public interface SystemReportService {
 
     List<MercadoLibreProduct> getMostPurchasedProducts();
 
-    List<MercadoLibreProduct> getFavoriteProductsTopFive();
+    List<FavoriteProductInTopFive> getFavoriteProductsTopFive();
 
     PurchasedProductCounter savePurchasedProductCounter(PurchasedProductCounter counter);
 
