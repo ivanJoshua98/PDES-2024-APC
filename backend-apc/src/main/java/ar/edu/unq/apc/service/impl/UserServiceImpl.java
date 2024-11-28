@@ -73,5 +73,10 @@ public class UserServiceImpl implements UserService {
         }
         
     }
+
+    @Override
+    public UserModel getUserByUserName(String userName) {
+        return this.userRepository.findByUserName(userName).orElseThrow(() -> new HttpException("User not found by userName: " + userName, HttpStatus.NOT_FOUND));
+    }
     
 }

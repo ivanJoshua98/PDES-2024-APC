@@ -94,8 +94,21 @@ public class UserModel {
     }
     
     public void addRole(Role role) {
-		this.roles.add(role);
+        if(!this.roles.contains(role)){
+            this.roles.add(role);
+        }
 	}
+
+    public void removeAdminRole(Role adminRole){
+        if(adminRole.getName().equals("ADMIN")){
+            this.roles.remove(adminRole);
+        }
+    }
+
+    public Boolean isAdmin(){
+        Role adminRole = new Role("ADMIN");
+        return this.roles.contains(adminRole);
+    }
 
     public List<String> getFavoriteProducts() {
         return favoriteProducts;
