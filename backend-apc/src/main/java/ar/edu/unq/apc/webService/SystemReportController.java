@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.unq.apc.model.UserWithMostPurchases;
-import ar.edu.unq.apc.service.UserService;
+import ar.edu.unq.apc.service.SystemReportService;
 import ar.edu.unq.apc.webService.dto.UserWithMostPurchasesDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,13 +20,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class SystemReportController {
 
     @Autowired
-    private UserService userService;
+    private SystemReportService systemReportService;
 
     
     @Operation(summary = "Get top five users with most purchases")
     @GetMapping("/reports/users-with-most-purchases")
     public ResponseEntity<List<UserWithMostPurchasesDTO>> getTopFiveUsersWithMostPurchases(){
-        List<UserWithMostPurchases> topFive = this.userService.getUserWithMostPurchases();
+        List<UserWithMostPurchases> topFive = this.systemReportService.getUsersWithMostPurchases();
 
         return ResponseEntity.ok().body(topFive.stream().map(this::convertUserEntityToUserDTO).toList());
     }
