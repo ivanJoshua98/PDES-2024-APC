@@ -85,12 +85,27 @@ public class UserController {
 
 
     @Operation(summary = "List of users of the application")
-    @PostMapping("/allUsers")
+    @GetMapping("/allUsers")
     public ResponseEntity<List<UserDTO>> allUsers(){
         return ResponseEntity.ok().body(this.userService.registeredUsers().stream()
 							               .map(this::convertUserEntityToUserDTO)
                                            .toList());
 
+    }
+
+    @Operation(summary = "Get a user by user mail or user name")
+    @GetMapping("/users/search/{search}")
+    public ResponseEntity<UserDTO> getUserByEmailOrUserName(@PathVariable String search){
+        ResponseEntity<UserDTO> response;
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.ok();
+        if(search.contains("@")){
+            UserModel user = this.userService.getUserByEmail(search);
+            response = responseBuilder.body(convertUserEntityToUserDTO(user));
+        } else {
+            UserModel user = this.userService.getUserByUserName(search);
+            response = responseBuilder.body(convertUserEntityToUserDTO(user));
+        }
+        return response;
     }
 
 
@@ -131,8 +146,44 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user.getFavoriteProducts());
     }
 
+    @Operation(summary = "Add the ADMIN role to user")
+    @PutMapping("/users/add-admin/{userIdToBeAdmin}")
+    public ResponseEntity<UserDTO> addAdminRoleToUser(@PathVariable String userIdToBeAdmin){
+        UserModel newAdmin = this.userService.getUserById(UUID.fromString(userIdToBeAdmin));
+        Role adminRole = this.roleService.getByName("ADMIN");
+
+        newAdmin.addRole(adminRole);
+        this.userService.updateUser(newAdmin);
+
+        return ResponseEntity.ok().body(convertUserEntityToUserDTO(newAdmin));
+    }
+
+    @Operation(summary = "Remove the ADMIN role to user")
+    @PutMapping("/users/remove-admin/{userIdToRemoveAdmin}")
+    public ResponseEntity<UserDTO> removeAdminRoleToUser(@PathVariable String userIdToRemoveAdmin){
+        UserModel oldAdmin = this.userService.getUserById(UUID.fromString(userIdToRemoveAdmin));
+        Role adminRole = this.roleService.getByName("ADMIN");
+
+        oldAdmin.removeAdminRole(adminRole);
+        this.userService.updateUser(oldAdmin);
+
+        return ResponseEntity.ok().body(convertUserEntityToUserDTO(oldAdmin));
+    }
+
+    @Operation(summary = "Return true if the user is ADMIN")
+    @GetMapping("/users/is-admin/{userId}")
+    public ResponseEntity<Boolean> isAdmin(@PathVariable String userId){
+        UserModel user = this.userService.getUserById(UUID.fromString(userId));
+
+        return ResponseEntity.ok().body(user.isAdmin());
+    }
+
     public UserDTO convertUserEntityToUserDTO(UserModel user){
         return new UserDTO(user.getId(), user.getUserName(), user.getEmail());
     }
+
+    /*private UserModel getUserFromToken(String authToken){
+        return userService.getUserByEmail(jwtProvider.getUserNameFromJWT(jwtProvider.getTokenWithoutBearerSuffix(authToken)));
+    }*/
 
 }

@@ -90,23 +90,32 @@ public class InitServiceInMemory {
 
     private void createAndSaveUsersToPostgres(){
         Role userRole = this.roleService.getByName("USER");
-        UserModel user1 = new UserModel("userBuyer", "userBuyer@mail.com", "credential");
-        user1.addRole(userRole);
+        Role adminRole = this.roleService.getByName("ADMIN");
 
+        UserModel user = new UserModel("userBuyer", "userBuyer@mail.com", "Credential.");
+        user.addRole(userRole);
+        
+        UserModel user1 = new UserModel("userAdmin", "userAdmin@mail.com", "Credential.");
+        user1.addRole(userRole);
+        user1.addRole(adminRole);
+
+        saveUserToPostgres(user);
         saveUserToPostgres(user1);
     }
 
     private void createAndSaveUsersToH2(){
         Role userRole = this.roleService.getByName("USER");
-        UserModel user1 = new UserModel("userBuyer", "userBuyer@mail.com", "credential");
+        Role adminRole = this.roleService.getByName("ADMIN");
+
+        UserModel user = new UserModel("userBuyer", "userBuyer@mail.com", "Credential.");
+        user.addRole(userRole);
+        
+        UserModel user1 = new UserModel("userAdmin", "userAdmin@mail.com", "Credential.");
         user1.addRole(userRole);
+        user1.addRole(adminRole);
 
-        Role userRole2 = this.roleService.getByName("ADMIN");
-        UserModel user2 = new UserModel("userAdmin", "userAdmin@mail.com", "credential");
-        user1.addRole(userRole2);
-
+        this.userService.saveUser(user);
         this.userService.saveUser(user1);
-        this.userService.saveUser(user2);
     }
 
     private void createAndSaveShoppingCartsToH2(){

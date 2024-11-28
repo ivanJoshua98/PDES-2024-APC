@@ -21,4 +21,6 @@ public interface UserService {
 
     UserModel updateUser(UserModel user);
 
+    UserModel getUserByUserName(String userName);
+
 }
