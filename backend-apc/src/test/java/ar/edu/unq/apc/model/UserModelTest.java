@@ -111,4 +111,26 @@ class UserModelTest {
         assertFalse(anyUser.getFavoriteProducts().contains("MLA222222"));
     }
 
+    @Test
+    void whenItAddsARoleThatAlreadyExistsThenRolesAreNotUpdatedTest() {
+        Role role = new Role("USER");
+
+        this.anyUser.addRole(role);
+        this.anyUser.addRole(role);
+
+        assertEquals(anyUser.getRoles().size(), 1);
+    }
+
+    @Test
+    void whenItRemovesTheAdminRoleThenItReturnsANewListOfRolesTest() {
+        Role adminRole = new Role("ADMIN");
+        List<Role> roles = new ArrayList<>();
+        roles.addAll(List.of(new Role("USER"), adminRole));
+        this.anyUser.setRoles(roles);
+
+        this.anyUser.removeAdminRole(adminRole);
+
+        assertFalse(anyUser.getRoles().contains(adminRole));
+    }
+
 }
