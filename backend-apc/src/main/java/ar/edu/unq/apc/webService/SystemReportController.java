@@ -23,10 +23,18 @@ public class SystemReportController {
     private SystemReportService systemReportService;
 
     
-    @Operation(summary = "Get top five users with most purchases")
-    @GetMapping("/reports/users-with-most-purchases")
+    @Operation(summary = "Get top five users with most purchases by shopping carts")
+    @GetMapping("/reports/users-with-most-purchases-by-shopping-carts")
     public ResponseEntity<List<UserWithMostPurchasesDTO>> getTopFiveUsersWithMostPurchases(){
         List<UserWithMostPurchases> topFive = this.systemReportService.getUsersWithMostPurchases();
+
+        return ResponseEntity.ok().body(topFive.stream().map(this::convertUserEntityToUserDTO).toList());
+    }
+
+    @Operation(summary = "Get top five users with most purchases by products amount")
+    @GetMapping("/reports/users-with-most-purchases-by-products-amount")
+    public ResponseEntity<List<UserWithMostPurchasesDTO>> getTopFiveUsersWithMostPurchasedProducts(){
+        List<UserWithMostPurchases> topFive = this.systemReportService.getUsersWithMostPurchasedProducts();
 
         return ResponseEntity.ok().body(topFive.stream().map(this::convertUserEntityToUserDTO).toList());
     }

@@ -17,7 +17,7 @@ public class ProductsPurchasedByUserCounter extends SystemReport{
         super();
     }
 
-    public ProductsPurchasedByUserCounter(String mercadoLibreId, Integer productsPurchasesCount, UUID userId) {
+    public ProductsPurchasedByUserCounter(UUID userId, Integer productsPurchasesCount) {
         this.productsPurchasesCount = productsPurchasesCount;
         this.userId = userId;
     }
@@ -36,6 +36,10 @@ public class ProductsPurchasedByUserCounter extends SystemReport{
 
     public void setProductsPurchasesCount(Integer productsPurchasesCount) {
         this.productsPurchasesCount = productsPurchasesCount;
+    }
+
+    public void countNewPurchasedProduct(Integer amount){
+        productsPurchasesCount = productsPurchasesCount + amount;
     }
     
 }

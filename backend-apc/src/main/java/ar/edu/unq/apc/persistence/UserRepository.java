@@ -23,7 +23,8 @@ public interface UserRepository  extends JpaRepository<UserModel, UUID> {
 
     Optional<UserModel> findByUserName(String userName);
 
-    @Query(nativeQuery = true, value = "SELECT id, email, user_name, purchases_count FROM user_model " + 
+    @Query(nativeQuery = true, value = 
+            "SELECT id, email, user_name, purchases_count FROM user_model " + 
             "INNER JOIN (SELECT buyer_id, COUNT(buyer_id) AS purchases_count " + 
                         "FROM shopping_cart " +
                         "WHERE cart_state = ?1 " +
