@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ar.edu.unq.apc.model.UserModel;
+import ar.edu.unq.apc.model.UserWithMostPurchases;
 
 public interface UserService {
     
@@ -22,5 +23,7 @@ public interface UserService {
     UserModel updateUser(UserModel user);
 
     UserModel getUserByUserName(String userName);
+
+    List<UserWithMostPurchases> getUserWithMostPurchases();
 
 }

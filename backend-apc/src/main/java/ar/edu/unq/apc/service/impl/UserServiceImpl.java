@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import ar.edu.unq.apc.model.CartState;
 import ar.edu.unq.apc.model.HttpException;
 import ar.edu.unq.apc.model.UserModel;
+import ar.edu.unq.apc.model.UserWithMostPurchases;
 import ar.edu.unq.apc.persistence.UserRepository;
 import ar.edu.unq.apc.service.UserService;
 
@@ -77,6 +79,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel getUserByUserName(String userName) {
         return this.userRepository.findByUserName(userName).orElseThrow(() -> new HttpException("User not found by userName: " + userName, HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public List<UserWithMostPurchases> getUserWithMostPurchases() {
+        return this.userRepository.findUsersWithMostPurchases(CartState.SOLD);
     }
     
 }
