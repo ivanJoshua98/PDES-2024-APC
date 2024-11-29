@@ -26,7 +26,6 @@ jobs:
           images: ivansanmartin/pdes-2024-apc-backend
           tags: |
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
