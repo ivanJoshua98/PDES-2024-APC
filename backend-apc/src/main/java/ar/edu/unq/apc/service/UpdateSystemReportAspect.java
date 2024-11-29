@@ -27,6 +27,9 @@ public class UpdateSystemReportAspect {
         log.info("////////////////// Update system report Aspect - AFTER START ////////////////////");
         if(shoppingCart.getCartState() == CartState.SOLD){
             this.systemReportService.saveProductsPurchasedByUserCounter(shoppingCart.getBuyer(), getProductsAmounFromShoppingCart(shoppingCart));
+            for (ProductInCart product : shoppingCart.getCart()) {
+                this.systemReportService.savePurchasedProductCounter(product.getMercadoLibreId(), product.getAmount());
+            }
             String methodName = joinPoint.getSignature().getName();
             log.info("Executing method: " + methodName + " and update reports");
         }

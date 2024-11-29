@@ -1,15 +1,15 @@
 package ar.edu.unq.apc.webService.dto;
 
-public class FavoriteProductInTopFiveDTO {
+public class FavoriteProductInTopDTO {
 
     private String productId;
 
     private Integer timesChosenFavorite;
 
-    public FavoriteProductInTopFiveDTO() {
+    public FavoriteProductInTopDTO() {
     }
 
-    public FavoriteProductInTopFiveDTO(String productId, Integer timesChosenFavorite) {
+    public FavoriteProductInTopDTO(String productId, Integer timesChosenFavorite) {
         this.productId = productId;
         this.timesChosenFavorite = timesChosenFavorite;
     }

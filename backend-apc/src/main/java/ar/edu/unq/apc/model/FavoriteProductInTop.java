@@ -1,6 +1,6 @@
 package ar.edu.unq.apc.model;
 
-public interface FavoriteProductInTopFive {
+public interface FavoriteProductInTop {
 
     String getProductId();
 

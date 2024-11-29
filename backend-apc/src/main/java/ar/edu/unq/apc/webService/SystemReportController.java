@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ar.edu.unq.apc.model.FavoriteProductInTopFive;
+import ar.edu.unq.apc.model.FavoriteProductInTop;
+import ar.edu.unq.apc.model.PurchasedProductInTop;
 import ar.edu.unq.apc.model.UserWithMostPurchases;
 import ar.edu.unq.apc.service.SystemReportService;
-import ar.edu.unq.apc.webService.dto.FavoriteProductInTopFiveDTO;
+import ar.edu.unq.apc.webService.dto.FavoriteProductInTopDTO;
+import ar.edu.unq.apc.webService.dto.PurchasedProductInTopDTO;
 import ar.edu.unq.apc.webService.dto.UserWithMostPurchasesDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,10 +45,19 @@ public class SystemReportController {
 
     @Operation(summary = "Get top five products most times chosen favorite")
     @GetMapping("/reports/products-most-times-chosen-favorite")
-    public ResponseEntity<List<FavoriteProductInTopFiveDTO>> getTopFiveFavoriteProducts(){
-        List<FavoriteProductInTopFive> topFive = this.systemReportService.getFavoriteProductsTopFive();
+    public ResponseEntity<List<FavoriteProductInTopDTO>> getTopFiveFavoriteProducts(){
+        List<FavoriteProductInTop> topFive = this.systemReportService.getFavoriteProductsTopFive();
 
         return ResponseEntity.ok().body(topFive.stream().map(this::convertProductEntityToProductDTO).toList());
+        
+    }
+
+    @Operation(summary = "Get top five most purchased products")
+    @GetMapping("/reports/most-purchased-products")
+    public ResponseEntity<List<PurchasedProductInTopDTO>> getMostPurchasedProducts(){
+        List<PurchasedProductInTop> topFive = this.systemReportService.getMostPurchasedProducts();
+
+        return ResponseEntity.ok().body(topFive.stream().map(this::convertPurchasedEntityToPurchasedDTO).toList());
         
     }
 
@@ -57,8 +68,12 @@ public class SystemReportController {
                                             user.getPurchasesCount());
     }
 
-    private FavoriteProductInTopFiveDTO convertProductEntityToProductDTO(FavoriteProductInTopFive product){
-        return new FavoriteProductInTopFiveDTO(product.getProductId(), product.getTimesChosenFavorite());
+    private FavoriteProductInTopDTO convertProductEntityToProductDTO(FavoriteProductInTop product){
+        return new FavoriteProductInTopDTO(product.getProductId(), product.getTimesChosenFavorite());
+    }
+
+    private PurchasedProductInTopDTO convertPurchasedEntityToPurchasedDTO(PurchasedProductInTop product){
+        return new PurchasedProductInTopDTO(product.getMercadoLibreId(), product.getPurchasesCount());
     }
     
 }

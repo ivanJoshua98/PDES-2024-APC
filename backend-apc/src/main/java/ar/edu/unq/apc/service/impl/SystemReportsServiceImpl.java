@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import ar.edu.unq.apc.model.FavoriteProductInTopFive;
+import ar.edu.unq.apc.model.FavoriteProductInTop;
 import ar.edu.unq.apc.model.HttpException;
-import ar.edu.unq.apc.model.MercadoLibreProduct;
 import ar.edu.unq.apc.model.ProductsPurchasedByUserCounter;
 import ar.edu.unq.apc.model.PurchasedProductCounter;
+import ar.edu.unq.apc.model.PurchasedProductInTop;
 import ar.edu.unq.apc.model.UserModel;
 import ar.edu.unq.apc.model.UserWithMostPurchases;
 import ar.edu.unq.apc.persistence.ProductsPurchasedByUserCounterRepository;
@@ -37,22 +37,6 @@ public class SystemReportsServiceImpl implements SystemReportService {
     }
 
     @Override
-    public List<MercadoLibreProduct> getMostPurchasedProducts() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMostPurchasedProducts'");
-    }
-
-    @Override
-    public List<FavoriteProductInTopFive> getFavoriteProductsTopFive() {
-        return this.counterByUserRepository.getFavoriteProductsTopFive();
-    }
-
-    @Override
-    public PurchasedProductCounter savePurchasedProductCounter(PurchasedProductCounter counter) {
-        return this.purchasedProductCounterRepository.save(counter);
-    }
-
-    @Override
     public ProductsPurchasedByUserCounter getProductsPurchasedByUserCounterByUserId(UUID userId) {
         return this.counterByUserRepository.findById(userId).orElseThrow(() -> new HttpException("Counter not found by user id: " + userId, HttpStatus.NOT_FOUND));
     }
@@ -70,8 +54,36 @@ public class SystemReportsServiceImpl implements SystemReportService {
     }
 
     @Override
+    public PurchasedProductCounter getPurchasedProductCounterByProductId(String productId) {
+        return this.purchasedProductCounterRepository.findById(productId).orElseThrow(() -> new HttpException("Counter not found by product id: " + productId, HttpStatus.NOT_FOUND));
+    }
+
+    @Override
+    public PurchasedProductCounter savePurchasedProductCounter(String mercadoLibreId, Integer amount) {
+        try {
+            PurchasedProductCounter counter = getPurchasedProductCounterByProductId(mercadoLibreId);
+            counter.countNewPurchase(amount);
+            return this.purchasedProductCounterRepository.save(counter);
+        } catch (HttpException e) {
+            PurchasedProductCounter newCounter = new PurchasedProductCounter(mercadoLibreId, amount);
+            return this.purchasedProductCounterRepository.save(newCounter);
+        }
+    }
+
+    @Override
     public List<UserWithMostPurchases> getUsersWithMostPurchasedProducts() {
         return this.counterByUserRepository.getUsersWithMostPurchasedProducts();
     }
+
+    @Override
+    public List<PurchasedProductInTop> getMostPurchasedProducts() {
+        return this.purchasedProductCounterRepository.getMostPurchasedProducts();
+    }
+
+    @Override
+    public List<FavoriteProductInTop> getFavoriteProductsTopFive() {
+        return this.counterByUserRepository.getFavoriteProductsTopFive();
+    }
+
     
 }

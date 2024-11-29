@@ -35,7 +35,7 @@ public class PurchasedProductCounter extends SystemReport{
         this.purchasesCount = purchasesCount;
     }
 
-    public void countNewPurchase(){
-        ++this.purchasesCount;
+    public void countNewPurchase(Integer amount){
+        this.purchasesCount = purchasesCount + amount;
     }
 }
