@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,21 +35,14 @@ public class UserModel {
                 inverseJoinColumns = @JoinColumn(name="role_id"))
     private List<Role> roles;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable( name="purchases_by_user",
-                joinColumns = @JoinColumn(name="user_id"),
-                inverseJoinColumns = @JoinColumn(name="purchase_id"))
-    private List<Purchase> purchases;
-    
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable( name="favorites",
-                joinColumns = @JoinColumn(name="user_id"),
-                inverseJoinColumns = @JoinColumn(name="product_id"))
-    private List<Product> favorites;
+    @ElementCollection
+    @CollectionTable(name = "favorite-products", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    private List<String> favoriteProducts;
 
     
     public UserModel() {
-        super();
+        this.roles = new ArrayList<>();
+        this.favoriteProducts = new ArrayList<>();
     }
 
     public UserModel(String userName, String email, String password) {
@@ -55,8 +50,7 @@ public class UserModel {
         this.email = email;
         this.password = password;
         this.roles = new ArrayList<>();
-        this.purchases = new ArrayList<>();
-        this.favorites = new ArrayList<>();
+        this.favoriteProducts = new ArrayList<>();
     }
 
     public UUID getId() {
@@ -98,24 +92,45 @@ public class UserModel {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
-
-    public List<Purchase> getPurchases() {
-        return purchases;
-    }
-
-    public void setPurchases(List<Purchase> purchases) {
-        this.purchases = purchases;
-    }
-
-    public List<Product> getFavorites() {
-        return favorites;
-    }
-
-    public void setFavorites(List<Product> favorites) {
-        this.favorites = favorites;
-    }
     
     public void addRole(Role role) {
-		this.roles.add(role);
+        if(!this.roles.contains(role)){
+            this.roles.add(role);
+        }
 	}
+
+    public void removeAdminRole(Role adminRole){
+        if(adminRole.getName().equals("ADMIN")){
+            this.roles.remove(adminRole);
+        }
+    }
+
+    public Boolean isAdmin(){
+        Role adminRole = new Role("ADMIN");
+        return this.roles.contains(adminRole);
+    }
+
+    public List<String> getFavoriteProducts() {
+        return favoriteProducts;
+    }
+
+    public void setFavoriteProducts(List<String> favoriteProducts) {
+        this.favoriteProducts = favoriteProducts;
+    }
+
+    public Boolean isFavoriteProduct(String productId){
+        return this.favoriteProducts.contains(productId);
+    }
+
+    public void addFavoriteProduct(String productId){
+        if(!isFavoriteProduct(productId)){
+            this.favoriteProducts.add(productId);
+        }
+    }
+
+    public void removeFavoriteProduct(String productId){
+        this.favoriteProducts.remove(productId);
+    }
+
+
 }

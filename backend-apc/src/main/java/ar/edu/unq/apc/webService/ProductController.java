@@ -1,5 +1,6 @@
 package ar.edu.unq.apc.webService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ar.edu.unq.apc.model.Product;
+import ar.edu.unq.apc.model.MercadoLibreProduct;
 import ar.edu.unq.apc.service.MercadoLibreProxyService;
-import ar.edu.unq.apc.webService.dto.ProductDTO;
+import ar.edu.unq.apc.webService.dto.MercadoLibreProductDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,10 +28,10 @@ public class ProductController {
     
     @Operation(summary = "Get products from search by key words")
     @GetMapping("/search/{words}")
-	public ResponseEntity<List<ProductDTO>> searchProductsByWorks(
+	public ResponseEntity<List<MercadoLibreProductDTO>> searchProductsByWorks(
         @Parameter(description = "The key words that needs to be searched", required = true)
         @PathVariable String words){
-		List <Product> products = this.mercadoLibre.searchProductsByWords(words);
+		List<MercadoLibreProduct> products = this.mercadoLibre.searchProductsByWords(words);
 		return ResponseEntity.ok()
 							 .body(products.stream()
 							               .map(this::convertProductEntityToProductDTO)
@@ -40,18 +41,29 @@ public class ProductController {
 
     @Operation(summary = "Get product from Mercado Libre")
     @GetMapping("/search/item/{id}")
-	public ResponseEntity<ProductDTO> getProductsByIdFromML(
+	public ResponseEntity<MercadoLibreProductDTO> getProductsByIdFromML(
         @Parameter(description = "The id that needs to be fetched", required = true)
         @PathVariable String id){
         
-        Product product = this.mercadoLibre.getProductById(id);
+        MercadoLibreProduct product = this.mercadoLibre.getProductById(id);
         return ResponseEntity.ok()
                              .body(convertProductEntityToProductDTO(product));
 
     }
 
-    private ProductDTO convertProductEntityToProductDTO(Product product){
-        return new ProductDTO(product.getId(),
+    @Operation(summary = "Get products by id from Mercado Libre. Example ids = MLA111111,MLA222222,...")
+    @GetMapping("/search/items/{ids}")
+    public ResponseEntity<List<MercadoLibreProductDTO>> getAllProductsById(@PathVariable String ids){
+        //Limitacion de Mercado Libre, solo permite buscar de a 20
+        List<String> groupBy20 = getAsList(ids.split(","));
+
+        List<MercadoLibreProduct> products = this.mercadoLibre.getProductsByIds(groupBy20);
+
+        return ResponseEntity.ok().body(products.stream().map(this::convertProductEntityToProductDTO).toList());
+    }
+
+    private MercadoLibreProductDTO convertProductEntityToProductDTO(MercadoLibreProduct product){
+        return new MercadoLibreProductDTO(product.getId(),
                             product.getLink(),
                             product.getTitle(),
                             product.getCategoryId(),
@@ -60,6 +72,14 @@ public class ProductController {
                             product.getCondition()
                             );
     }
-     
+
+    private List<String> getAsList(String[] array){
+        List<String> list = new ArrayList<>();
+        for(int i = 0; i < array.length; i++){
+            list.add(array[i]);
+        }
+        return list;
+    } 
+
     
 }
