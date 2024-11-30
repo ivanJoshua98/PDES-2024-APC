@@ -87,6 +87,7 @@ public class SecurityConfig {
 				.requestMatchers(mvcMatcherBuilder.pattern("/error")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/apc/register")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/apc/log-in")).permitAll()
+				.requestMatchers(mvcMatcherBuilder.pattern("/apc/admin/**")).hasAuthority("ADMIN")
                 .anyRequest().authenticated()
         	);	
 		http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "System reports services", description = "Manage reports of the application")
 @RestController
-@RequestMapping("/apc")
+@RequestMapping("/apc/admin")
 public class SystemReportController {
 
     @Autowired
