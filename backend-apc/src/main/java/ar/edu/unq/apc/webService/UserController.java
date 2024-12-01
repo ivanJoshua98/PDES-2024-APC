@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ import ar.edu.unq.apc.webService.dto.TokenDTO;
 import ar.edu.unq.apc.webService.dto.UserDTO;
 import ar.edu.unq.apc.webService.dto.UserLoginDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -85,16 +87,16 @@ public class UserController {
 
 
     @Operation(summary = "List of users of the application")
-    @GetMapping("/allUsers")
+    @GetMapping("/admin/all-users")
     public ResponseEntity<List<UserDTO>> allUsers(){
         return ResponseEntity.ok().body(this.userService.registeredUsers().stream()
 							               .map(this::convertUserEntityToUserDTO)
                                            .toList());
-
     }
 
+
     @Operation(summary = "Get a user by user mail or user name")
-    @GetMapping("/users/search/{search}")
+    @GetMapping("/admin/users/search/{search}")
     public ResponseEntity<UserDTO> getUserByEmailOrUserName(@PathVariable String search){
         ResponseEntity<UserDTO> response;
         ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.ok();
@@ -109,27 +111,37 @@ public class UserController {
     }
 
 
+    @Operation(summary = "Get all favorite products of logged-in user")
+    @GetMapping("/favorite-products")
+    public ResponseEntity<List<String>> getAllFavoriteProducts(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken){
+        UserModel user = getUserFromToken(authToken);
+        return ResponseEntity.ok().body(user.getFavoriteProducts());
+    }
+
+
     @Operation(summary = "Get all favorite products by user")
-    @GetMapping("/{userId}/favorite-products")
-    public ResponseEntity<List<String>> getAllFavoriteProducts(@PathVariable String userId){
+    @GetMapping("/admin/{userId}/favorite-products")
+    public ResponseEntity<List<String>> getAllFavoriteProductsByUser(@PathVariable String userId){
         UserModel user = this.userService.getUserById(UUID.fromString(userId));
         return ResponseEntity.ok().body(user.getFavoriteProducts());
     }
 
+
     @Operation(summary = "Add a favorite product")
-    @PutMapping("/{userId}/favorite-products/add/{productId}")
-    public ResponseEntity<List<String>> addFavoriteProduct(@PathVariable String userId, @PathVariable String productId){
-        UserModel user = this.userService.getUserById(UUID.fromString(userId));
+    @PutMapping("/favorite-products/add/{productId}")
+    public ResponseEntity<List<String>> addFavoriteProduct(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String productId){
+        UserModel user = getUserFromToken(authToken);
         user.addFavoriteProduct(productId);
         this.userService.updateUser(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user.getFavoriteProducts());
     }
 
-    @Operation(summary = "Return true if it is a favorite product from a user")
-    @GetMapping("/{userId}/is-favorite-product/{productId}")
-    public ResponseEntity<Boolean> isFavoriteProduct(@PathVariable String userId, @PathVariable String productId){
-        UserModel user = this.userService.getUserById(UUID.fromString(userId));
+
+    @Operation(summary = "Return true if it is a favorite product of logged-in user")
+    @GetMapping("/is-favorite-product/{productId}")
+    public ResponseEntity<Boolean> isFavoriteProduct(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String productId){
+        UserModel user = getUserFromToken(authToken);
         Boolean result = user.isFavoriteProduct(productId);
 
         return ResponseEntity.ok().body(result);
@@ -137,17 +149,18 @@ public class UserController {
 
 
     @Operation(summary = "Remove a product from favorites")
-    @PutMapping("/{userId}/favorite-products/remove/{productId}")
-    public ResponseEntity<List<String>> removeFavoriteProduct(@PathVariable String userId, @PathVariable String productId){
-        UserModel user = this.userService.getUserById(UUID.fromString(userId));
+    @PutMapping("/favorite-products/remove/{productId}")
+    public ResponseEntity<List<String>> removeFavoriteProduct(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String productId){
+        UserModel user = getUserFromToken(authToken);
         user.removeFavoriteProduct(productId);
         this.userService.updateUser(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user.getFavoriteProducts());
     }
 
+
     @Operation(summary = "Add the ADMIN role to user")
-    @PutMapping("/users/add-admin/{userIdToBeAdmin}")
+    @PutMapping("/admin/users/add-admin/{userIdToBeAdmin}")
     public ResponseEntity<UserDTO> addAdminRoleToUser(@PathVariable String userIdToBeAdmin){
         UserModel newAdmin = this.userService.getUserById(UUID.fromString(userIdToBeAdmin));
         Role adminRole = this.roleService.getByName("ADMIN");
@@ -158,8 +171,9 @@ public class UserController {
         return ResponseEntity.ok().body(convertUserEntityToUserDTO(newAdmin));
     }
 
+
     @Operation(summary = "Remove the ADMIN role to user")
-    @PutMapping("/users/remove-admin/{userIdToRemoveAdmin}")
+    @PutMapping("/admin/users/remove-admin/{userIdToRemoveAdmin}")
     public ResponseEntity<UserDTO> removeAdminRoleToUser(@PathVariable String userIdToRemoveAdmin){
         UserModel oldAdmin = this.userService.getUserById(UUID.fromString(userIdToRemoveAdmin));
         Role adminRole = this.roleService.getByName("ADMIN");
@@ -170,6 +184,7 @@ public class UserController {
         return ResponseEntity.ok().body(convertUserEntityToUserDTO(oldAdmin));
     }
 
+
     @Operation(summary = "Return true if the user is ADMIN")
     @GetMapping("/users/is-admin/{userId}")
     public ResponseEntity<Boolean> isAdmin(@PathVariable String userId){
@@ -178,12 +193,14 @@ public class UserController {
         return ResponseEntity.ok().body(user.isAdmin());
     }
 
+
     public UserDTO convertUserEntityToUserDTO(UserModel user){
         return new UserDTO(user.getId(), user.getUserName(), user.getEmail());
     }
 
-    /*private UserModel getUserFromToken(String authToken){
+
+    private UserModel getUserFromToken(String authToken){
         return userService.getUserByEmail(jwtProvider.getUserNameFromJWT(jwtProvider.getTokenWithoutBearerSuffix(authToken)));
-    }*/
+    }
 
 }
