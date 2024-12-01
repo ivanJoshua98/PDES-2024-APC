@@ -92,7 +92,7 @@ public class ShoppingCartController {
 
 
     @Operation(summary = "Get all shopping carts in the application")
-    @GetMapping("/admin/sopping-cart/all-shopping-carts")
+    @GetMapping("/admin/shopping-cart/all-shopping-carts")
     public ResponseEntity<List<ShoppingCartDTO>> allPurchases(){
         List<ShoppingCart> shoppingCarts = this.shoppingCartService.getAllShoppingCart();
         return ResponseEntity.ok().body(shoppingCarts.stream()
@@ -128,7 +128,7 @@ public class ShoppingCartController {
     }
 
     @Operation(summary = "Remove a product to the shopping cart in progress")
-    @PutMapping("/shopping-cart/inprogress/remove-roduct/{productId}")
+    @PutMapping("/shopping-cart/inprogress/remove-product/{productId}")
     public ResponseEntity<ShoppingCartDTO> removeProduct(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String productId){
         ShoppingCart shoppingCart = getShoppingCartInProgressFromToken(authToken);
         ProductInCart productInCart = this.productInCartService.getProductById(UUID.fromString(productId));

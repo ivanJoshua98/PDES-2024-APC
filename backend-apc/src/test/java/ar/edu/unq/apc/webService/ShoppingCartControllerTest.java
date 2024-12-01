@@ -2,7 +2,6 @@ package ar.edu.unq.apc.webService;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
@@ -60,9 +59,9 @@ public class ShoppingCartControllerTest {
     @Autowired
     private ShoppingCartService shoppingCartService;
 
-    private String token;
+    private HttpHeaders headersWithTokenUser;
 
-    private HttpHeaders headersWithToken;
+    private HttpHeaders headersWithTokenAdmin;
 
     private HttpHeaders headersWithoutToken;
 
@@ -77,11 +76,17 @@ public class ShoppingCartControllerTest {
 
     @BeforeEach
 	public void init() {
-    	this.token = this.jwtProvider.generateToken(
-	        new UsernamePasswordAuthenticationToken("userBuyer@mail.com", "credential")
-        );	    	
-	    this.headersWithToken = new HttpHeaders();
-		headersWithToken.set("Authorization", "Bearer " + token);
+    	String tokenUser = this.jwtProvider.generateToken(
+	        new UsernamePasswordAuthenticationToken("userBuyer@mail.com", "Credential.")
+        );	 
+        String tokenAdmin = this.jwtProvider.generateToken(
+	        new UsernamePasswordAuthenticationToken("userAdmin@mail.com", "Credential.")
+        );	     	
+	    this.headersWithTokenUser = new HttpHeaders();
+		headersWithTokenUser.set("Authorization", "Bearer " + tokenUser);
+
+        this.headersWithTokenAdmin = new HttpHeaders();
+		headersWithTokenAdmin.set("Authorization", "Bearer " + tokenAdmin);
 
         this.headersWithoutToken = new HttpHeaders();
         this.anyUser = userService.getUserByEmail("userBuyer@mail.com");
@@ -97,125 +102,124 @@ public class ShoppingCartControllerTest {
         NewProductInCartDTO newProduct = new NewProductInCartDTO("MLAid", 1, "picture", "link", "title", "categorydId", 100.00, "new");
         NewShoppingCartDTO newCart = new NewShoppingCartDTO(100.00, List.of(newProduct), otherUser.getId());
 
-        HttpEntity<NewShoppingCartDTO> postRequest = new HttpEntity<NewShoppingCartDTO>(newCart, headersWithToken);
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.postForEntity(HTTP_LOCALHOST + port + "/apc/shoppingCart/newShoppingCart", postRequest, ShoppingCartDTO.class);
+        HttpEntity<NewShoppingCartDTO> postRequest = new HttpEntity<NewShoppingCartDTO>(newCart, headersWithTokenUser);
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.postForEntity(HTTP_LOCALHOST + port + "/apc/shopping-cart/new-shopping-cart", postRequest, ShoppingCartDTO.class);
 
         ShoppingCartDTO createdCart = result.getBody();
 
         assertEquals(result.getStatusCode(), HttpStatus.CREATED);
         assertEquals(createdCart.getTotalAmountPurchase(), 100.0);
-        assertEquals(createdCart.getCartState(), CartState.INPROGRESS);
+        assertEquals(CartState.INPROGRESS, createdCart.getCartState());
     }
 
     @Test
     void getShoppingCartByIdWithoutTokenResponds401UnauthorizedTest() {
         HttpEntity<Void> getRequest = new HttpEntity<>(headersWithoutToken);
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/ab5be3d6-4e78-4aaf-bf7f-5e1db665e13b",
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/admin/shopping-cart/ab5be3d6-4e78-4aaf-bf7f-5e1db665e13b",
             HttpMethod.GET,
             getRequest,
             ShoppingCartDTO.class);
 
-        assertEquals(result.getStatusCode(), HttpStatus.UNAUTHORIZED);
+        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
     }
 
     @Test
-    void getShoppingCartInProgressByUserIdSuccesfullyTest() {
-        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithToken);
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/inprogress/"+ anyUser.getId(),
+    void whenAUserGetsAShoppingCartByIdWithoutAdminRoleThenItsResponds403ForbiddenTest() {
+        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithTokenUser);
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/admin/shopping-cart/ab5be3d6-4e78-4aaf-bf7f-5e1db665e13b",
+            HttpMethod.GET,
+            getRequest,
+            ShoppingCartDTO.class);
+
+        assertEquals(result.getStatusCode(), HttpStatus.FORBIDDEN);
+    }
+
+
+    @Test
+    void getShoppingCartInProgressToLoggedInUserSuccesfullyTest() {
+        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithTokenUser);
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress",
             HttpMethod.GET,
             getRequest,
             ShoppingCartDTO.class);
 
         ShoppingCartDTO cart = result.getBody();
 
-        assertEquals(result.getStatusCode(), HttpStatus.OK);
-        assertEquals(cart.getBuyerId(), anyUser.getId());
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(anyUser.getId(), cart.getBuyerId());
     }
 
     @Test
-    void getShoppingCartInProgressByUserIdUnsuccesfullyTest() {
-        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithToken);
-        ResponseEntity<String> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/inprogress/"+ otherUser.getId(),
+    void getShoppingCartInProgressUnsuccesfullyTest() {
+        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithTokenAdmin);
+        ResponseEntity<String> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress",
             HttpMethod.GET,
             getRequest,
             String.class);
 
         assertEquals(result.getStatusCode(), HttpStatus.NOT_FOUND);
-        assertEquals(result.getBody(), "Cart in progress not found");
+        assertEquals("Cart in progress not found", result.getBody());
     }
 
-    @Test
-    void getAllPurchasesSuccesfullyTest() {
-        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithToken);
-        ResponseEntity<ShoppingCartDTO[]> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/allShoppingCarts",
-            HttpMethod.GET,
-            getRequest,
-            ShoppingCartDTO[].class);
-
-        ShoppingCartDTO[] carts = result.getBody();
-
-        assertEquals(result.getStatusCode(), HttpStatus.OK);
-        assertNotNull(carts[0]);
-    }
 
     @Test
     @DirtiesContext
-    void addProductToTheShoppingCartSuccesfullyTest() {
+    void addProductToTheShoppingCartInProgressSuccesfullyTest() {
         Double totalOfCart = anyCart.getTotalAmountPurchase();
         NewProductInCartDTO newProduct = new NewProductInCartDTO("MLAid", 1, "picture", "link", "title", "categorydId", 100.00, "new");
 
-        HttpEntity<NewProductInCartDTO> putRequest = new HttpEntity<NewProductInCartDTO>(newProduct, headersWithToken);
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/" + anyCart.getId() + "/addProduct",
+        HttpEntity<NewProductInCartDTO> putRequest = new HttpEntity<NewProductInCartDTO>(newProduct, headersWithTokenUser);
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress/add-product",
             HttpMethod.PUT,
             putRequest,
             ShoppingCartDTO.class);
 
         ShoppingCartDTO updatedCart = result.getBody();
 
-        assertEquals(result.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(updatedCart.getProductsInCart().size(), 2);
-        assertEquals(updatedCart.getTotalAmountPurchase(), totalOfCart + newProduct.getPrice());
-        assertEquals(updatedCart.getCartState(), CartState.INPROGRESS);
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals(2, updatedCart.getProductsInCart().size());
+        assertEquals(totalOfCart + newProduct.getPrice(), updatedCart.getTotalAmountPurchase());
+        assertEquals(CartState.INPROGRESS, updatedCart.getCartState());
     }
 
     @Test
     @DirtiesContext
-    void addProductOneTimeToTheShoppingCartSuccesfullyTest() {
+    void addProductOneTimeToTheShoppingCartInProgressSuccesfullyTest() {
         Double totalOfCart = anyCart.getTotalAmountPurchase();
         Integer amountOfProduct = anyProduct.getAmount();
 
-        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithToken);
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/" + anyCart.getId() + "/addProductOneTime/" + anyProduct.getId(),
+        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithTokenUser);
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress/add-product-one-time/" + anyProduct.getId(),
             HttpMethod.PUT,
             putRequest,
             ShoppingCartDTO.class);
 
         ShoppingCartDTO updatedCart = result.getBody();
 
-        assertEquals(result.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(updatedCart.getProductsInCart().get(0).getAmount(), amountOfProduct + 1);
-        assertEquals(updatedCart.getTotalAmountPurchase(), totalOfCart + anyProduct.getPrice());
-        assertEquals(updatedCart.getCartState(), CartState.INPROGRESS);
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals(amountOfProduct + 1, updatedCart.getProductsInCart().get(0).getAmount());
+        assertEquals(totalOfCart + anyProduct.getPrice(), updatedCart.getTotalAmountPurchase());
+        assertEquals(CartState.INPROGRESS, updatedCart.getCartState());
     }
 
     @Test
     @DirtiesContext
-    void removeProductToTheShoppingCartSuccesfully() {
+    void removeProductToTheShoppingCartInProgressSuccesfully() {
         Integer amountOfProducts = anyCart.getCart().size();
         Double totalOfCart = anyCart.getTotalAmountPurchase();
 
-        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithToken);
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/" + anyCart.getId() + "/removeProduct/" + anyProduct.getId(),
+        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithTokenUser);
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress/remove-product/" + anyProduct.getId(),
             HttpMethod.PUT,
             putRequest,
             ShoppingCartDTO.class);
 
         ShoppingCartDTO updatedCart = result.getBody();
 
-        assertEquals(result.getStatusCode(), HttpStatus.CREATED);
-        assertEquals(updatedCart.getProductsInCart().size(), amountOfProducts - 1);
-        assertEquals(updatedCart.getTotalAmountPurchase(), totalOfCart - anyProduct.getPrice());
-        assertEquals(updatedCart.getCartState(), CartState.INPROGRESS);
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertEquals(amountOfProducts - 1, updatedCart.getProductsInCart().size());
+        assertEquals(totalOfCart - anyProduct.getPrice(), updatedCart.getTotalAmountPurchase());
+        assertEquals(CartState.INPROGRESS, updatedCart.getCartState());
     }
 
     @Test
@@ -223,64 +227,81 @@ public class ShoppingCartControllerTest {
     void whenRemovesAProductToTheShoppingCartWithJustOneProductThenItDeletesTheShoppingCart() {
         UUID cartId = anyCart.getId();
 
-        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithToken);
+        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithTokenUser);
         
-        restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/" + anyCart.getId() + "/removeProduct/" + anyProduct.getId(),
+        restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress/remove-product/" + anyProduct.getId(),
             HttpMethod.PUT,
             putRequest,
             ShoppingCartDTO.class);
         
         HttpException exception = assertThrows(HttpException.class, () -> shoppingCartService.getShoppingCartById(cartId));
 
-        assertEquals(exception.getMessage(), "Cart not found by id: " + cartId);
+        assertEquals("Cart not found by id: " + cartId, exception.getMessage());
     }
 
     @Test
     @DirtiesContext
-    void finishPurchaseSuccesfullyTest() {
+    void finishPurchaseWithShoppingCartInProgressSuccesfullyTest() {
         ShoppingCart cart = shoppingCartService.getShoppingCartByBuyer(anyUser);
         CartState stateBeforeFinish = cart.getCartState();
 
-        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithToken);
+        HttpEntity<ShoppingCartDTO> putRequest = new HttpEntity<ShoppingCartDTO>(headersWithTokenUser);
         
-        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/" + cart.getId() + "/finishPurchase",
+        ResponseEntity<ShoppingCartDTO> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress/finish-purchase",
             HttpMethod.PUT,
             putRequest,
             ShoppingCartDTO.class);
 
         ShoppingCartDTO soldShoppingCart = result.getBody();
 
-        assertEquals(result.getStatusCode(), HttpStatus.CREATED);
-        assertNotEquals(soldShoppingCart.getCartState(), stateBeforeFinish);
-        assertEquals(soldShoppingCart.getCartState(), CartState.SOLD);
+        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertNotEquals(stateBeforeFinish, soldShoppingCart.getCartState());
+        assertEquals(CartState.SOLD, soldShoppingCart.getCartState());
     }
 
     @Test
     @DirtiesContext
-    void deleteShoppingCartSuccesfullyTest() {
+    void deleteShoppingCartWithAdminRoleSuccesfullyTest() {
         UUID cartId = anyCart.getId();
 
-        HttpEntity<ShoppingCartDTO> deleteRequest = new HttpEntity<ShoppingCartDTO>(headersWithToken);
+        HttpEntity<ShoppingCartDTO> deleteRequest = new HttpEntity<ShoppingCartDTO>(headersWithTokenAdmin);
         
-        ResponseEntity<String> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/" + cartId + "/deleteShoppingCart",
+        ResponseEntity<String> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/admin/shopping-cart/" + cartId + "/delete-shopping-cart",
             HttpMethod.DELETE,
             deleteRequest,
             String.class);
 
-        assertEquals(result.getStatusCode(), HttpStatus.NO_CONTENT);
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         HttpException exception = assertThrows(HttpException.class, () -> shoppingCartService.getShoppingCartById(cartId));
-        assertEquals(exception.getMessage(), "Cart not found by id: " + cartId);
+        assertEquals("Cart not found by id: " + cartId, exception.getMessage());
     }
 
     @Test
-    void getAllFinishedShoppingCartsOfAUserSuccesfullyTest() {
-        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithToken);
-        ResponseEntity<ShoppingCartDTO[]> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shoppingCart/allPurchases/"+ anyUser.getId(),
+    @DirtiesContext
+    void deleteShoppingCartInProgressSuccesfullyTest() {
+        UUID cartId = anyCart.getId();
+
+        HttpEntity<ShoppingCartDTO> deleteRequest = new HttpEntity<ShoppingCartDTO>(headersWithTokenUser);
+        
+        ResponseEntity<String> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/shopping-cart/inprogress/delete-shopping-cart",
+            HttpMethod.DELETE,
+            deleteRequest,
+            String.class);
+
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
+        HttpException exception = assertThrows(HttpException.class, () -> shoppingCartService.getShoppingCartById(cartId));
+        assertEquals("Cart not found by id: " + cartId, exception.getMessage());
+    }
+
+    @Test
+    void getAllShoppingCartsByUserWithAdminRoleSuccesfullyTest() {
+        HttpEntity<Void> getRequest = new HttpEntity<>(headersWithTokenAdmin);
+        ResponseEntity<ShoppingCartDTO[]> result = restTemplate.exchange(HTTP_LOCALHOST + port + "/apc/admin/shopping-cart/all-purchases/"+ anyUser.getId(),
             HttpMethod.GET,
             getRequest,
             ShoppingCartDTO[].class);
 
-        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
 }
