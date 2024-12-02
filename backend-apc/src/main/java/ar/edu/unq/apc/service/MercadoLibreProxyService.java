@@ -32,7 +32,7 @@ public class MercadoLibreProxyService {
     //La busqueda en Mercado Libre solo permite 20 resultados
     private Integer limitOfResults = 20;
 
-    private String token = "APP_USR-7663246217238920-120108-f4e2e4497eafd3f26c8ee50166c31544-1136666046";
+    private String token = new String();
 
     @Value("${integration.mercadolibre.api.url:NONE}")
     private String mercadoLibreApiURL;
