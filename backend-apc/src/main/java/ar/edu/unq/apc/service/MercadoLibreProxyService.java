@@ -3,6 +3,7 @@ package ar.edu.unq.apc.service;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -10,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.JsonArray;
@@ -28,8 +32,7 @@ public class MercadoLibreProxyService {
     //La busqueda en Mercado Libre solo permite 20 resultados
     private Integer limitOfResults = 20;
 
-    @Value("${integration.mercadolibre.api.token:NONE}")
-    private String token;
+    private String token = new String();
 
     @Value("${integration.mercadolibre.api.url:NONE}")
     private String mercadoLibreApiURL;
@@ -102,17 +105,7 @@ public class MercadoLibreProxyService {
         }
         return products;
     }
- 
-    
-    public String executeGetRequest(String url){
-        HttpEntity<Void> request;
-        HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer " + token);
-		request = new HttpEntity<>(headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
-        return response.getBody();
-    }
     
     public MercadoLibreProduct deserializeProduct(JsonObject gsonObj){
         String title = gsonObj.get("title").getAsString();
@@ -183,5 +176,52 @@ public class MercadoLibreProxyService {
             attributes.add(attribute);
         }
         return attributes;
+    }
+
+
+    private void setToken(String token){
+        this.token = token;
+    }
+
+    public String executeGetRequest(String url){
+        HttpEntity<Void> request;
+        HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", "Bearer " + token);
+		request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+            return response.getBody(); 
+        } catch (HttpClientErrorException e) {
+            refreshMercadoLibreToken();
+
+            headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + token);
+            request = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+            return response.getBody(); 
+        }
+    }
+
+    private void refreshMercadoLibreToken(){
+        HttpEntity<?> request;
+        HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("grant_type", "refresh_token");
+        requestBody.add("client_id", "7663246217238920");
+        requestBody.add("client_secret", "XfOGdpCrbMJNj3ZP8qlW6W0MrBkn0Rre");
+        requestBody.add("refresh_token", "TG-66ccd97c7d5f5800019cdfc2-1136666046");
+
+        request = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(mercadoLibreApiURL + "/oauth/token", HttpMethod.POST, request, String.class);
+
+        JsonParser parser = new JsonParser();
+        JsonObject gsonObj = parser.parse(response.getBody()).getAsJsonObject();
+        String updatedToken = gsonObj.get("access_token").getAsString();
+
+        setToken(updatedToken);
     }
 }

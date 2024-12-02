@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.unq.apc.model.CartState;
+import ar.edu.unq.apc.model.HttpException;
 import ar.edu.unq.apc.model.ProductInCart;
 import ar.edu.unq.apc.model.ShoppingCart;
 import ar.edu.unq.apc.model.UserModel;
@@ -80,6 +81,20 @@ public class ShoppingCartController {
         return ResponseEntity.ok().body(convertShoppingCartEntityToShoppingCartDTO(shoppingCart));
     }
 
+
+    @Operation(summary = "Get the shopping cart by id that belongs to logged-in user")
+    @GetMapping("/shopping-cart/{shoppingCartId}")
+    public ResponseEntity<ShoppingCartDTO> getShoppingCartByIdAndLoggedUser(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String shoppingCartId){
+        UserModel user = getUserFromToken(authToken);
+        ShoppingCart shoppingCart = this.shoppingCartService.getShoppingCartById(UUID.fromString(shoppingCartId));
+
+        if(user.getId() == shoppingCart.getBuyer().getId()){
+            return ResponseEntity.ok().body(convertShoppingCartEntityToShoppingCartDTO(shoppingCart));
+        } else {
+            throw new HttpException("Cart not found by id: " + shoppingCart.getId(),
+                                    HttpStatus.NOT_FOUND);
+        }
+    }
 
 
     @Operation(summary = "Get shopping cart in progress of logged-in user")
