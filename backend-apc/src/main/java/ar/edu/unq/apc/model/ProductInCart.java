@@ -85,7 +85,7 @@ public class ProductInCart extends Product{
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((mercadoLibreId == null) ? 0 : mercadoLibreId.hashCode());
         return result;
     }
 
@@ -98,12 +98,15 @@ public class ProductInCart extends Product{
         if (getClass() != obj.getClass())
             return false;
         ProductInCart other = (ProductInCart) obj;
-        if (id == null) {
-            if (other.getId() != null)
+        if (mercadoLibreId == null) {
+            if (other.getMercadoLibreId() != null)
                 return false;
-        } else if (!id.equals(other.getId()))
+        } else if (!mercadoLibreId.equals(other.getMercadoLibreId()))
             return false;
         return true;
     }
+
+   
+    
     
 }
