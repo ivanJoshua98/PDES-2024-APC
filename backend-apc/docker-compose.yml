@@ -1,7 +1,7 @@
 services:
   java_app_apc: 
     container_name: java_app_apc
-    image: ivansanmartin/pdes-2024-apc-backend:lastest
+    image: ivansanmartin/pdes-2024-apc-backend:latest
     environment: 
       - DATABASE_URL=${DATABASE_URL}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
@@ -17,7 +17,7 @@ services:
 
   react_app_apc:
     container_name: react_app_apc
-    image: ivansanmartin/pdes-2024-apc-frontend:lastest
+    image: ivansanmartin/pdes-2024-apc-frontend:latest
     ports:
       - '3000:3000'
     expose: 
@@ -39,6 +39,12 @@ services:
       - '5432'
     volumes:
       - apc_db:/var/lib/postgresql/data
+  k6:
+    image: grafana/k6:latest
+    network_mode: host
+    volumes: 
+      - ./k6/src:/src
+
 volumes:
   apc_db:
     driver: local
