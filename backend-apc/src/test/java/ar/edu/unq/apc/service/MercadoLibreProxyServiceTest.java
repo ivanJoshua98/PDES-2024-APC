@@ -2,7 +2,21 @@ package ar.edu.unq.apc.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -20,6 +34,13 @@ public class MercadoLibreProxyServiceTest {
     private JsonObject anyJsonObjectWithMoreValues;
 
     private JsonParser jsonParser;
+
+    @Mock
+    private RestTemplate restTemplate;
+
+    @InjectMocks
+    @Spy
+    private MercadoLibreProxyService mlService = new MercadoLibreProxyService();
 
     @BeforeEach
     void init(){
@@ -139,6 +160,37 @@ public class MercadoLibreProxyServiceTest {
 
         assertEquals(value, 0.0);
 
+    }
+ 
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    @ExtendWith(MockitoExtension.class)
+    void getProductByIdFromMercadoLibreSuccesfullyTest(){
+
+        String jsonProduct = "[{" + 
+                                    "\"code\":200, " +
+                                    "\"body\":{" + 
+                                                "\"pictures\":[],"+
+                                                "\"price\":309000," +
+                                                "\"permalink\":\"http://product.com\"," +
+                                                "\"id\":\"MLA1391234903\","+
+                                                "\"category_id\":\"MLA4344\","+
+                                                "\"title\":\"Generic product\","+
+                                                "\"condition\":\"new\""+
+                                            "}"+
+                                "}]";
+
+        ResponseEntity<String> response = new ResponseEntity<String>(jsonProduct, HttpStatus.OK);
+
+        when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class), any(Class.class)))
+        .thenReturn(response);
+
+        MercadoLibreProduct product = this.mlService.getProductById("MLA4521");
+
+        assertEquals("Generic product", product.getTitle());
+        assertEquals("MLA1391234903", product.getId());
+        assertEquals(309000.00, product.getPrice());
     }
 
 }

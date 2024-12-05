@@ -71,22 +71,22 @@ public class ProductInCartTest {
     }
 
     @Test
-    void whenItEqualsAnyProductInCartThenItReturnsTrueIfTheIdsAreEqual() {
-        UUID id = UUID.randomUUID();
-        anyProduct.setId(id);
+    void whenItEqualsAnyProductInCartThenItReturnsTrueIfTheMercadoLibreIdsAreEqual() {
+        String id = "MLA121212";
+        anyProduct.setMercadoLibreId(id);
 
         ProductInCart otheProduct = new ProductInCart();
-        otheProduct.setId(id);
+        otheProduct.setMercadoLibreId(id);
 
         assertEquals(anyProduct, otheProduct);
     }
 
     @Test
-    void whenItEqualsAnyProductInCartThenItReturnsFalseIfTheIdsArentEqual() {
-        anyProduct.setId(UUID.randomUUID());
+    void whenItEqualsAnyProductInCartThenItReturnsFalseIfTheMercadoLibreIdsArentEqual() {
+        anyProduct.setMercadoLibreId("MLA232323");
 
         ProductInCart otheProduct = new ProductInCart();
-        otheProduct.setId(UUID.randomUUID());
+        otheProduct.setMercadoLibreId("MLA454545");
 
         assertNotEquals(anyProduct, otheProduct);
     }
