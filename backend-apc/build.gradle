@@ -58,19 +58,22 @@ tasks.named('test') {
 	finalizedBy jacocoTestReport
 }
 
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = true
+        html.required = true
+    }
+}
+
+
 sonar {
   properties {
     property "sonar.projectKey", "ivanJoshua98_PDES-2024-APC"
     property "sonar.organization", "ivanjoshua98-1"
     property "sonar.host.url", "https://sonarcloud.io"
+	property 'sonar.java.coveragePlugin', 'jacoco'
   }
 }
 
-jacocoTestReport{
-	dependsOn test
-	reports {
-        xml{
-			enabled true
-		}
-    }
-}
+tasks["sonar"].dependsOn("jacocoTestReport")
