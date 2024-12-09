@@ -5,6 +5,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.6'
 	id "application"
 	id "org.sonarqube" version "5.1.0.4882"
+	id 'jacoco'
 }
 
 group = 'ar.edu.unq'
@@ -54,12 +55,25 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
 }
+
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = true
+        html.required = true
+    }
+}
+
 
 sonar {
   properties {
     property "sonar.projectKey", "ivanJoshua98_PDES-2024-APC"
     property "sonar.organization", "ivanjoshua98-1"
     property "sonar.host.url", "https://sonarcloud.io"
+	property 'sonar.java.coveragePlugin', 'jacoco'
   }
 }
+
+tasks["sonar"].dependsOn("jacocoTestReport")

@@ -15,6 +15,22 @@ class AttributeTest {
     }
 
     @Test
+    void aNewAttributeHasAName(){
+        Attribute newAttribute = new Attribute("Material", "Plastico");
+
+        assertEquals("Plastico", newAttribute.getValue());
+        assertEquals("Material", newAttribute.getName());
+    }
+
+    @Test
+    void aNewAttributeHasAValue(){
+        Attribute newAttribute = new Attribute("Material", "Plastico");
+
+        assertEquals("Plastico", newAttribute.getValue());
+    }
+
+
+    @Test
     void whenItSetsTheNameOfAnyAttributeThenItReturnsANewNameTest() {
         anyAttribute.setName("Condicion");
 

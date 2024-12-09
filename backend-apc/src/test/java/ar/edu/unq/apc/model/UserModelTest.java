@@ -133,4 +133,12 @@ class UserModelTest {
         assertFalse(anyUser.getRoles().contains(adminRole));
     }
 
+    @Test
+    void aUserIsAdminIfTheyhaveTheAdminRole(){
+        Role adminRole = new Role("ADMIN");
+        anyUser.addRole(adminRole);
+
+        assertTrue(anyUser.isAdmin());
+    }
+
 }
