@@ -79,6 +79,19 @@ public class ShoppingCartTest {
         assertEquals(anyShoppingCart.getTotalAmountPurchase(), 2000.00);
     }
 
+
+    @Test
+    void whenItsAddsAProductThatAlreadyExistsInShoppingCartThenItReturnsTheAmountPlusOne() {
+        anyProduct.setPrice(2000.00);
+
+        anyShoppingCart.addProduct(anyProduct);
+        anyShoppingCart.addProduct(anyProduct);
+
+        Integer index = anyShoppingCart.getCart().indexOf(anyProduct);
+        assertEquals(anyShoppingCart.getCart().get(index).getAmount(), 2);
+    }
+    
+
     @Test
     void whenItAddsOneTimeAProductThatAlreadyExistsInShoppingCartThenItReturnsTheAmountPlusOne() {
         anyShoppingCart.addProduct(anyProduct);
