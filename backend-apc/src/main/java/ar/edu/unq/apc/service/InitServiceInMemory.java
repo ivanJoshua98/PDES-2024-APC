@@ -12,7 +12,6 @@ import ar.edu.unq.apc.model.ShoppingCart;
 import ar.edu.unq.apc.model.UserModel;
 import jakarta.annotation.PostConstruct;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -117,44 +116,62 @@ public class InitServiceInMemory {
 
         UserModel buyer1 = new UserModel("userBuyer1", "userBuyer1@mail.com", "Credential.");
         buyer1.addRole(userRole);
-        buyer1.setFavoriteProducts(favoriteProducts(List.of("MLA1452204905","MLA1853954300","MLA1391234903","MLA1891257852","MLA1462782165","MLA1456046051")));
 
         UserModel buyer2 = new UserModel("userBuyer2", "userBuyer2@mail.com", "Credential.");
         buyer2.addRole(userRole);
-        buyer2.setFavoriteProducts(favoriteProducts(List.of("MLA1452204905","MLA1853954300","MLA1391234903","MLA1891257852","MLA1462782165")));
 
         UserModel buyer3 = new UserModel("userBuyer3", "userBuyer3@mail.com", "Credential.");
         buyer3.addRole(userRole);
-        buyer3.setFavoriteProducts(favoriteProducts(List.of("MLA1452204905","MLA1853954300","MLA1391234903","MLA1891257852")));
 
         UserModel buyer4 = new UserModel("userBuyer4", "userBuyer4@mail.com", "Credential.");
         buyer4.addRole(userRole);
-        buyer4.setFavoriteProducts(favoriteProducts(List.of("MLA1452204905","MLA1853954300","MLA1391234903")));
 
         UserModel buyer5 = new UserModel("userBuyer5", "userBuyer5@mail.com", "Credential.");
         buyer5.addRole(userRole);
-        buyer5.setFavoriteProducts(favoriteProducts(List.of("MLA1452204905","MLA1853954300")));
 
         UserModel buyer6 = new UserModel("userBuyer6", "userBuyer6@mail.com", "Credential.");
         buyer6.addRole(userRole);
-        buyer6.setFavoriteProducts(favoriteProducts(List.of("MLA1452204905")));
         
         UserModel admin = new UserModel("userAdmin", "userAdmin@mail.com", "Credential.");
         admin.addRole(userRole);
         admin.addRole(adminRole);
 
-        saveUserToPostgres(admin);
-        saveUserToPostgres(buyer1);
-        saveUserToPostgres(buyer2);
-        saveUserToPostgres(buyer3);
-        saveUserToPostgres(buyer4);
-        saveUserToPostgres(buyer5);
-        saveUserToPostgres(buyer6);
-    }
+        if(!this.userService.existsByEmail("userBuyer6@mail.com")){
 
-    private void saveUserToPostgres(UserModel user){
-        if(!this.userService.existsByEmail(user.getEmail())){
-            this.userService.saveUser(user);
+            admin = userService.saveUser(admin);
+            buyer1 = userService.saveUser(buyer1);
+            buyer2 = userService.saveUser(buyer2);
+            buyer3 = userService.saveUser(buyer3);
+            buyer4 = userService.saveUser(buyer4);
+            buyer5 = userService.saveUser(buyer5);
+            buyer6 = userService.saveUser(buyer6);
+
+            buyer1 = userService.updateMoreFavorites("MLA1452204905", buyer1);
+            buyer1 = userService.updateMoreFavorites("MLA1853954300", buyer1);
+            buyer1 = userService.updateMoreFavorites("MLA1391234903", buyer1);
+            buyer1 = userService.updateMoreFavorites("MLA1891257852", buyer1);
+            buyer1 = userService.updateMoreFavorites("MLA1462782165", buyer1);
+            buyer1 = userService.updateMoreFavorites("MLA1456046051", buyer1);
+
+            buyer2 = userService.updateMoreFavorites("MLA1452204905", buyer2);
+            buyer2 = userService.updateMoreFavorites("MLA1853954300", buyer2);
+            buyer2 = userService.updateMoreFavorites("MLA1391234903", buyer2);
+            buyer2 = userService.updateMoreFavorites("MLA1891257852", buyer2);
+            buyer2 = userService.updateMoreFavorites("MLA1462782165", buyer2);
+
+            buyer3 = userService.updateMoreFavorites("MLA1452204905", buyer3);
+            buyer3 = userService.updateMoreFavorites("MLA1853954300", buyer3);
+            buyer3 = userService.updateMoreFavorites("MLA1391234903", buyer3);
+            buyer3 = userService.updateMoreFavorites("MLA1891257852", buyer3);
+
+            buyer4 = userService.updateMoreFavorites("MLA1452204905", buyer4);
+            buyer4 = userService.updateMoreFavorites("MLA1853954300", buyer4);
+            buyer4 = userService.updateMoreFavorites("MLA1391234903", buyer4);
+
+            buyer5 = userService.updateMoreFavorites("MLA1452204905", buyer5);
+            buyer5 = userService.updateMoreFavorites("MLA1853954300", buyer5);
+            
+            buyer6 = userService.updateMoreFavorites("MLA1452204905", buyer6);
         }
     }
 
@@ -420,12 +437,6 @@ public class InitServiceInMemory {
                                 "MLA1452204905", 
                                 amount, 
                                 "https://http2.mlstatic.com/D_820352-MLU78262924446_082024-O.jpg");
-    }
-
-    private List<String> favoriteProducts(List<String> products){
-        ArrayList<String> list = new ArrayList<>();
-        list.addAll(products);
-        return list;
     }
 
 }

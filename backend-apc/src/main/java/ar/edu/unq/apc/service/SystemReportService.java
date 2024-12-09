@@ -3,29 +3,25 @@ package ar.edu.unq.apc.service;
 import java.util.List;
 import java.util.UUID;
 
-import ar.edu.unq.apc.model.FavoriteProductInTop;
-import ar.edu.unq.apc.model.ProductsPurchasedByUserCounter;
-import ar.edu.unq.apc.model.PurchasedProductCounter;
-import ar.edu.unq.apc.model.PurchasedProductInTop;
-import ar.edu.unq.apc.model.UserModel;
-import ar.edu.unq.apc.model.UserWithMostPurchases;
+import ar.edu.unq.apc.model.ProductCounter;
+import ar.edu.unq.apc.model.UserCounter;
 
 public interface SystemReportService {
     
-    List<UserWithMostPurchases> getUsersWithMostPurchases();
+    List<UserCounter> getUsersWithMostPurchases(Integer limit);
 
-    List<PurchasedProductInTop> getMostPurchasedProducts();
+    List<ProductCounter> getMostPurchasedProducts(Integer limit);
 
-    List<FavoriteProductInTop> getFavoriteProductsTopFive();
+    List<ProductCounter> getMostFavorites(Integer limit);
 
-    List<UserWithMostPurchases> getUsersWithMostPurchasedProducts();
+    List<UserCounter> getUsersWithMostPurchasesByProducts(Integer limit);
 
-    ProductsPurchasedByUserCounter saveProductsPurchasedByUserCounter(UserModel buyer, Integer amount);
+    ProductCounter saveProductCounter(ProductCounter counter);
 
-    ProductsPurchasedByUserCounter getProductsPurchasedByUserCounterByUserId(UUID userId);
+    UserCounter saveUserCounter(UserCounter counter);
 
-    PurchasedProductCounter getPurchasedProductCounterByProductId(String productId);
+    ProductCounter getProductCounter(String productId);
 
-    PurchasedProductCounter savePurchasedProductCounter(String mercadoLibreId, Integer amount);
+    UserCounter getUserCounter(UUID userId);
 
 }

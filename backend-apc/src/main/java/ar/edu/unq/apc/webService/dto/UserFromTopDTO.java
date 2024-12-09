@@ -2,7 +2,7 @@ package ar.edu.unq.apc.webService.dto;
 
 import java.util.UUID;
 
-public class UserWithMostPurchasesDTO {
+public class UserFromTopDTO {
 
     private UUID id;
 
@@ -12,10 +12,10 @@ public class UserWithMostPurchasesDTO {
 
     private Integer purchases_count;
 
-    public UserWithMostPurchasesDTO() {
+    public UserFromTopDTO() {
     }
 
-    public UserWithMostPurchasesDTO(UUID id, String userName, String email, Integer purchases_count) {
+    public UserFromTopDTO(UUID id, String userName, String email, Integer purchases_count) {
         this.id = id;
         this.userName = userName;
         this.email = email;

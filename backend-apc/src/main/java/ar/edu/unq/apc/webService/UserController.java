@@ -131,8 +131,8 @@ public class UserController {
     @PutMapping("/favorite-products/add/{productId}")
     public ResponseEntity<List<String>> addFavoriteProduct(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String productId){
         UserModel user = getUserFromToken(authToken);
-        user.addFavoriteProduct(productId);
-        this.userService.updateUser(user);
+        
+        this.userService.updateMoreFavorites(productId, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user.getFavoriteProducts());
     }
@@ -152,8 +152,7 @@ public class UserController {
     @PutMapping("/favorite-products/remove/{productId}")
     public ResponseEntity<List<String>> removeFavoriteProduct(@Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authToken, @PathVariable String productId){
         UserModel user = getUserFromToken(authToken);
-        user.removeFavoriteProduct(productId);
-        this.userService.updateUser(user);
+        this.userService.updateLessFavorites(productId, user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user.getFavoriteProducts());
     }
