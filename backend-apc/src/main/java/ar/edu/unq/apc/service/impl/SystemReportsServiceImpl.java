@@ -7,83 +7,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import ar.edu.unq.apc.model.FavoriteProductInTop;
+import ar.edu.unq.apc.model.CartState;
 import ar.edu.unq.apc.model.HttpException;
-import ar.edu.unq.apc.model.ProductsPurchasedByUserCounter;
-import ar.edu.unq.apc.model.PurchasedProductCounter;
-import ar.edu.unq.apc.model.PurchasedProductInTop;
-import ar.edu.unq.apc.model.UserModel;
-import ar.edu.unq.apc.model.UserWithMostPurchases;
-import ar.edu.unq.apc.persistence.ProductsPurchasedByUserCounterRepository;
-import ar.edu.unq.apc.persistence.PurchasedProductCounterRepository;
+import ar.edu.unq.apc.model.ProductCounter;
+import ar.edu.unq.apc.model.UserCounter;
+import ar.edu.unq.apc.persistence.ProductCounterRepository;
+import ar.edu.unq.apc.persistence.UserCounterRepository;
 import ar.edu.unq.apc.service.SystemReportService;
-import ar.edu.unq.apc.service.UserService;
 
 @Service
 public class SystemReportsServiceImpl implements SystemReportService {
 
     @Autowired
-    private UserService userService;
+    private ProductCounterRepository pcRepocitory;
 
     @Autowired
-    private ProductsPurchasedByUserCounterRepository counterByUserRepository;
-
-    @Autowired
-    private PurchasedProductCounterRepository purchasedProductCounterRepository;
+    private UserCounterRepository ucRepocitory;
 
     @Override
-    public List<UserWithMostPurchases> getUsersWithMostPurchases() {    
-        return this.userService.getUserWithMostPurchases();
+    public List<UserCounter> getUsersWithMostPurchases(Integer limit) {
+        return this.ucRepocitory.getUsersWithMostPurchases(CartState.SOLD, limit);
     }
 
     @Override
-    public ProductsPurchasedByUserCounter getProductsPurchasedByUserCounterByUserId(UUID userId) {
-        return this.counterByUserRepository.findById(userId).orElseThrow(() -> new HttpException("Counter not found by user id: " + userId, HttpStatus.NOT_FOUND));
+    public List<ProductCounter> getMostPurchasedProducts(Integer limit) {
+        return this.pcRepocitory.getMostPurchasedProducts(limit);
     }
 
     @Override
-    public ProductsPurchasedByUserCounter saveProductsPurchasedByUserCounter(UserModel buyer, Integer amount) {
-        try {
-            ProductsPurchasedByUserCounter counter = getProductsPurchasedByUserCounterByUserId(buyer.getId());
-            counter.countNewPurchasedProduct(amount);
-            return this.counterByUserRepository.save(counter);
-        } catch (HttpException e) {
-            ProductsPurchasedByUserCounter newCounter = new ProductsPurchasedByUserCounter(buyer.getId(), amount);
-            return this.counterByUserRepository.save(newCounter);
-        }
+    public List<ProductCounter> getMostFavorites(Integer limit) {
+        return this.pcRepocitory.getMostFavorites(limit);
     }
 
     @Override
-    public PurchasedProductCounter getPurchasedProductCounterByProductId(String productId) {
-        return this.purchasedProductCounterRepository.findById(productId).orElseThrow(() -> new HttpException("Counter not found by product id: " + productId, HttpStatus.NOT_FOUND));
+    public List<UserCounter> getUsersWithMostPurchasesByProducts(Integer limit) {
+        return this.ucRepocitory.getUsersWithMostPurchasesByProducts(limit);
     }
 
     @Override
-    public PurchasedProductCounter savePurchasedProductCounter(String mercadoLibreId, Integer amount) {
-        try {
-            PurchasedProductCounter counter = getPurchasedProductCounterByProductId(mercadoLibreId);
-            counter.countNewPurchase(amount);
-            return this.purchasedProductCounterRepository.save(counter);
-        } catch (HttpException e) {
-            PurchasedProductCounter newCounter = new PurchasedProductCounter(mercadoLibreId, amount);
-            return this.purchasedProductCounterRepository.save(newCounter);
-        }
+    public ProductCounter saveProductCounter(ProductCounter counter) {
+        return this.pcRepocitory.save(counter);
     }
 
     @Override
-    public List<UserWithMostPurchases> getUsersWithMostPurchasedProducts() {
-        return this.counterByUserRepository.getUsersWithMostPurchasedProducts();
+    public UserCounter saveUserCounter(UserCounter counter) {
+        return this.ucRepocitory.save(counter);
     }
 
     @Override
-    public List<PurchasedProductInTop> getMostPurchasedProducts() {
-        return this.purchasedProductCounterRepository.getMostPurchasedProducts();
+    public ProductCounter getProductCounter(String productId) {
+        return this.pcRepocitory.findById(productId).orElseThrow(() -> new HttpException("Counter not found by product id: " + productId, HttpStatus.NOT_FOUND));
     }
 
     @Override
-    public List<FavoriteProductInTop> getFavoriteProductsTopFive() {
-        return this.counterByUserRepository.getFavoriteProductsTopFive();
+    public UserCounter getUserCounter(UUID userId) {
+        return this.ucRepocitory.findById(userId).orElseThrow(() -> new HttpException("Counter not found by user id: " + userId, HttpStatus.NOT_FOUND));
     }
-
-    
 }

@@ -36,7 +36,7 @@ public class UserModel {
     private List<Role> roles;
 
     @ElementCollection
-    @CollectionTable(name = "favorite-products", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    @CollectionTable(name = "favorite_products", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private List<String> favoriteProducts;
 
     
