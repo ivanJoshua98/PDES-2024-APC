@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import ar.edu.unq.apc.model.UserModel;
-import ar.edu.unq.apc.model.UserWithMostPurchases;
 
 public interface UserService {
     
@@ -24,6 +23,8 @@ public interface UserService {
 
     UserModel getUserByUserName(String userName);
 
-    List<UserWithMostPurchases> getUserWithMostPurchases();
+    UserModel updateMoreFavorites(String productId, UserModel user);
+
+    UserModel updateLessFavorites(String productId, UserModel user);
 
 }
