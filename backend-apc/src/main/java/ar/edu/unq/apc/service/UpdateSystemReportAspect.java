@@ -29,6 +29,9 @@ public class UpdateSystemReportAspect {
     @Autowired
     private MercadoLibreProxyService mlService;
 
+    @Autowired
+    private PurchasesMetrics purchasesMetrics;
+
     private Logger log = LoggerFactory.getLogger(ExceptionHandlerAspectCustomPointcut.class);
 
     @After("execution(* ar.edu.unq.apc.service.ShoppingCartService.updateShoppingCart(..)) && args(shoppingCart,..)")
@@ -43,6 +46,8 @@ public class UpdateSystemReportAspect {
                 //Updates the number of times the product was purchased
                 updatePurchasedProductCounter(product);
             }
+
+            purchasesMetrics.countedCall();
             String methodName = joinPoint.getSignature().getName();
             log.info("Executed method: " + methodName + " and updated reports"); 
         }
