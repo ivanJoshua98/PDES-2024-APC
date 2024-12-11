@@ -1,29 +1,38 @@
-services:
-  java_app_apc: 
-    container_name: java_app_apc
-    image: ivansanmartin/pdes-2024-apc-backend:latest
-    environment: 
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_USERNAME=${DATABASE_USERNAME}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD} 
-      - ML_TOKEN=${ML_TOKEN}
-    ports:
-      - '8080:8080'
-    expose:
-      - '8080'
-    depends_on:
-      - apc_db
-    build: . 
+networks:
+  monitoring:
+    driver: bridge
 
-  react_app_apc:
-    container_name: react_app_apc
-    image: ivansanmartin/pdes-2024-apc-frontend:latest
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  apc_db:
+    driver: local
+
+services:
+
+  prometheus:
+    image: prom/prometheus:v2.37.9
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    volumes:
+      - ./pthconfig/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - ./data:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
     ports:
       - '3000:3000'
-    expose: 
-      - '3000'
-    depends_on:
-      - java_app_apc
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    #password: root123
 
   apc_db:
     container_name: apc_db
@@ -39,12 +48,30 @@ services:
       - '5432'
     volumes:
       - apc_db:/var/lib/postgresql/data
+
+  java-app-apc: 
+    container_name: java-app-apc
+    image: ivansanmartin/pdes-2024-apc-backend:1.3.3
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    depends_on:
+      - apc_db
+    build: . 
+
+  react-app-apc:
+    container_name: react-app-apc
+    image: ivansanmartin/pdes-2024-apc-frontend:1.3.3
+    ports:
+      - '5000:5000'
+    expose: 
+      - '5000'
+    depends_on:
+      - java-app-apc
+      
   k6:
     image: grafana/k6:latest
     network_mode: host
     volumes: 
       - ./k6/src:/src
-
-volumes:
-  apc_db:
-    driver: local
