@@ -1,9 +1,12 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check } from 'k6';
 
 export const options = {
     vus: 10,  // Número de usuarios virtuales
     duration: '10s',  // Duración de la prueba
+    thresholds: {
+        http_req_duration: ['p(90) < 600'],
+    }
 };
 
 // Lista de URLs a probar
@@ -16,7 +19,7 @@ export default function () {
 
     const headers = { 
         'Content-Type': 'application/json', 
-        'Authorization':  defaultConfig.token
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQWRtaW5AbWFpbC5jb20iLCJpYXQiOjE3MzM5MjY0MzF9.ByzsZo66qRby3HA38aXqTOx8OVwex7okLuFvrorXKFc'
     };
 
     // Recorre cada URL y realiza la solicitud
@@ -26,7 +29,5 @@ export default function () {
         check(res, {
             'status es 200': (r) => r.status === 200
         });
-        
-        sleep(0);  // Tiempo de espera entre solicitudes para cada URL
     });
 }
