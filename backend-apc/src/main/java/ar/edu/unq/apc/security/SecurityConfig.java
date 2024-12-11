@@ -84,6 +84,7 @@ public class SecurityConfig {
         	.authorizeHttpRequests(auth -> auth
 				.requestMatchers(mvcMatcherBuilder.pattern("/swagger-ui/**")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/v3/api-docs/**")).permitAll()
+				.requestMatchers(mvcMatcherBuilder.pattern("/actuator/**")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/error")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/apc/register")).permitAll()
 				.requestMatchers(mvcMatcherBuilder.pattern("/apc/log-in")).permitAll()
