@@ -1,17 +1,23 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
-import defaultConfig from '../config';
+import { check } from 'k6';
 
 export const options = {    
-    vus: 10,  // Número de usuarios virtuales
-    duration: '5s',  // Duración de la prueba
+    thresholds: {
+        // 90% of requests must finish within 900ms.
+        http_req_duration: ['p(90) < 5000'],
+      },
+    stages: [
+        { duration: '10s', target: 4 },
+        { duration: '60s', target: 50 },
+        { duration: '10s', target: 0 },
+      ], 
 };
 
 export default function () {
 
     const headers = { 
         'Content-Type': 'application/json', 
-        'Authorization':  defaultConfig.token
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQWRtaW5AbWFpbC5jb20iLCJpYXQiOjE3MzM5MjY0MzF9.ByzsZo66qRby3HA38aXqTOx8OVwex7okLuFvrorXKFc'
     };
     
     
@@ -19,7 +25,6 @@ export default function () {
 
     check(res, {
         'status es 200': (r) => r.status === 200,
+        'get body successfully': (r) => r.body.includes('Pelota'),
     });
-
-    sleep(0);  // Tiempo de espera entre las solicitudes de cada usuario
 }
