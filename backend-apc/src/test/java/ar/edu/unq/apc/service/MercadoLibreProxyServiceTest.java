@@ -28,9 +28,6 @@ import ar.edu.unq.apc.model.MercadoLibreProduct;
 
 public class MercadoLibreProxyServiceTest {
 
-    
-    private MercadoLibreProxyService mercadoLibreProxyService = new MercadoLibreProxyService();
-
     private JsonObject anyJsonObjectWithMoreValues;
 
     private JsonParser jsonParser;
@@ -65,7 +62,7 @@ public class MercadoLibreProxyServiceTest {
 
         anyJsonObjectWithMoreValues =  jsonParser.parse(jsonProductWithMoreValues).getAsJsonObject();
 
-        MercadoLibreProduct product = this.mercadoLibreProxyService.deserializeProduct(anyJsonObjectWithMoreValues);
+        MercadoLibreProduct product = this.mlService.deserializeProduct(anyJsonObjectWithMoreValues);
 
         assertEquals(product.getId(), "MLA4521");
         assertEquals(product.getLink(), "http://product.com");
@@ -99,7 +96,7 @@ public class MercadoLibreProxyServiceTest {
 
     JsonArray gsonArrPictures = gsonObj.get("pictures").getAsJsonArray();
     
-    List<String> pictures = this.mercadoLibreProxyService.extractUrlPictures(gsonArrPictures);
+    List<String> pictures = this.mlService.extractUrlPictures(gsonArrPictures);
 
     assertEquals(pictures, List.of("www.url1.com", "www.url2.com"));
     }
@@ -113,7 +110,7 @@ public class MercadoLibreProxyServiceTest {
 
         JsonObject jsonObjectWithTitle =  jsonParser.parse(jsonWithTitle).getAsJsonObject();
 
-        String value = this.mercadoLibreProxyService.getStringFromJson("title", jsonObjectWithTitle);
+        String value = this.mlService.getStringFromJson("title", jsonObjectWithTitle);
 
         assertEquals(value, "Titulo");
 
@@ -128,7 +125,7 @@ public class MercadoLibreProxyServiceTest {
 
         JsonObject jsonObjectWithTitle =  jsonParser.parse(jsonWithTitle).getAsJsonObject();
 
-        String value = this.mercadoLibreProxyService.getStringFromJson("title", jsonObjectWithTitle);
+        String value = this.mlService.getStringFromJson("title", jsonObjectWithTitle);
 
         assertEquals(value, "");
 
@@ -142,7 +139,7 @@ public class MercadoLibreProxyServiceTest {
 
         JsonObject jsonObjectWithPrice =  jsonParser.parse(jsonWithPrice).getAsJsonObject();
 
-        Double value = this.mercadoLibreProxyService.getDoubleFromJson("price", jsonObjectWithPrice);
+        Double value = this.mlService.getDoubleFromJson("price", jsonObjectWithPrice);
 
         assertEquals(value, 234.65);
 
@@ -156,7 +153,7 @@ public class MercadoLibreProxyServiceTest {
 
         JsonObject jsonObjectWithPrice =  jsonParser.parse(jsonWithPrice).getAsJsonObject();
 
-        Double value = this.mercadoLibreProxyService.getDoubleFromJson("price", jsonObjectWithPrice);
+        Double value = this.mlService.getDoubleFromJson("price", jsonObjectWithPrice);
 
         assertEquals(value, 0.0);
 
